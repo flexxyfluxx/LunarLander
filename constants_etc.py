@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 """ Universal Constants Module:
 Enthält die ganzen Dicts und so.
 Hier werden außerdem die Settings aus der INI geparsed
@@ -14,17 +16,7 @@ class Cfg(): # Dataclass mit den Settings aus der INI.
     def __init__(self):
         self._parser = cp.ConfigParser()
         self._parser.read("settings.ini")
-        
-        self.WINDOW_HEIGHT = self._parser.getint('WindowDimensions', 'WINDOW_HEIGHT')
-        self.WINDOW_HEIGHT = 200 if self.WINDOW_HEIGHT < 200 else self.WINDOW_HEIGHT
-        
-        self.WINDOW_WIDTH = self._parser.getint('WindowDimensions', 'WINDOW_WIDTH')
-        self.WINDOW_WIDTH = 200 if self.WINDOW_WIDTH < 200 else self.WINDOW_WIDTH
-        
-        self.PADDLE_SPEED = self._parser.getint('GameSettings', 'PADDLE_SPEED')
-        self.PADDLE_ACCEL_LIMIT = self._parser.getfloat('GameSettings', 'PADDLE_ACCEL_LIMIT')
-        self.BALL_SPEED = self._parser.getint('GameSettings', 'BALL_SPEED')
-        self.OBSTACLES = self._parser.getboolean('GameSettings', 'OBSTACLES')
+    
     
     
     def commit_to_ini(self):
@@ -40,7 +32,7 @@ config = Cfg()
 # ----- KONSTANTEN -----
 """ Dict mit den Paths zu den relevanten Bildern: """
 SPRITE = {
-    # insert sprites
+    'lander': abspath("./sprites/lander.png")
 }
 
 """ Richtungskonstanten: """
@@ -96,5 +88,25 @@ KEY = {
     '8': 56,
     '9': 57
 }
+""" Blanke Objekte des Typs 'object' sind nur mit sich selbst identisch.
+Hiermit kann ich arbiträre Konstanten definieren, die zB. hier nur zur
+Spezifikation eines Funktionsverhaltens dienen:
+
+obj1 = object()
+obj2 = object()
+print(obj1 is obj2) # prints False
+print(obj1 == obj2) # prints False
+
+obj3 = object()
+ref = obj3
+print(obj3 is ref) # prints True
+print(obj3 == ref) # prints True
+
+Ich kann hiermit arbiträre Keys erstellen, die nur der Identifikation/Kennzeichnung dienen und keine weitere Bedeutung haben.
+"""
+LAST_UP = object()
+LAST_DN = object()
+LAST_LEFT = object()
+LAST_RIGHT = object()
 
 # ----- ENDE KONSTANTEN -----

@@ -1,47 +1,132 @@
-
-
-import gamegrid as gg
+# -*- coding: utf-8 -*-
+import ch.aplu.jgamegrid as gg
 from math import *
 from Floacation import *
+from constants_etc import *
 
 class Lander(gg.Actor):
-    def __init__(self, sprite, gravity):
-        gg.Actor.__init__(self, sprite)
+    def __init__(self, grid, sprite, gravity, key_thrust_up, key_thrust_dn, key_rotate_left, key_rotate_right):
+        self.grid = grid
+        scaled_sprite = gg.GGBitmap.getScaledImage(sprite, 0.1, 0)
+        
+        gg.Actor.__init__(self, scaled_sprite)
         self._gravity = gravity
         
         self.x_velocity = 0
         self.y_velocity = 0
         
-        self.true_location = Floacation(20, 20)
+        self.true_position = Floacation(64, 64)
         
         self.angle = 0
+        
+        self.fuel = 1000
+
+        self.thrust = 0
+        self._thrust_momentum = None
+        self._rotate_momentum = None
+
+        self.key_thrust_up = key_thrust_up
+        self.key_thrust_dn = key_thrust_dn
+        self.key_rotate_left = key_rotate_left
+        self.key_rotate_right = key_rotate_right
     
     
     def act(self):
+        """
+        Erst wird je nach Tastendruck Schub erhöht/gesenkt und die Drehung des Landers gesteuert.
+        Dann werden 
+        """
+        # thrust
+        if self.grid.isKeyPressed(self.key_thrust_up) and self.grid.isKeyPressed(self.key_thrust_dn):
+            
+            if self._thrust_momentum == LAST_UP:
+                self.thrust -= 1 if self.thrust > 0 else 0
+                
+            elif self._thrust_momentum == LAST_DN:
+                self.thrust += 1 if self.thrust < 1000 else 0
+        
+        elif self.grid.isKeyPressed(self.key_thrust_up) and not self.grid.isKeyPressed(self.key_thrust_dn):
+            self.thrust += 1 if self.thrust < 1000 else 0
+            self._thrust_momentum = LAST_UP
+        
+        elif self.grid.isKeyPressed(self.key_thrust_dn) and not self.grid.isKeyPressed(self.key_thrust_up):
+            self.thrust -= 1 if self.thrust > 0 else 0
+            self._thrust_momentum = LAST_DN
+        
+        else:
+            self._thrust_momentum = None
+        # end of thrust
+
+        # rotation
+        if self.grid.isKeyPressed(self.key_rotate_left) and self.grid.isKeyPressed(self.key_rotate_right):
+            
+            if self._rotate_momentum == LAST_LEFT:
+                self.rotate(self.true_position.get_int_location(), 5)
+                
+            elif self._rotate_momentum == LAST_RIGHT:
+                self.rotate(self.true_position.get_int_location(), -5)
+        
+        elif self.grid.isKeyPressed(self.key_rotate_left) and not self.grid.isKeyPressed(self.key_rotate_right):
+            self.rotate(self.true_position.get_int_location(), -5)
+            self._rotate_momentum = LAST_LEFT
+        
+        elif self.grid.isKeyPressed(self.key_rotate_right) and not self.grid.isKeyPressed(self.key_rotate_left):
+            self.rotate(self.true_position.get_int_location(), 5)
+            self._rotate_momentum = LAST_RIGHT
+        
+        else:
+            self._rotate_momentum = None
+        # end of rotation
+        
+        
+        print(self.thrust, "|", self.getDirection())
+
         self._apply_gravity()
+        self._apply_thrust()
         self.true_position.x += self.x_velocity / 100
         self.true_position.y -= self.y_velocity / 100
         self.move()
-    
+
     
     def move(self):
         self.setX(self.true_position.get_int_x())
         self.setY(self.true_position.get_int_y())
 
-
     def get_abs_velocity(self):
         return sqrt(self.x_velocity ** 2 + self.y_velocity ** 2)
     
-    
     def _apply_gravity(self):
         self.y_velocity -= self._gravity / 100
+    
+    def get_mass(self):
+        return 4280 + 10.92 * self.fuel
+
+    def _apply_thrust(self):
+        accel = 160 * self.thrust / self.get_mass()
+        angle = self.getDirection()
+        
+        self.x_velocity += (accel * cos(radians(angle))) / 100
+        self.y_velocity -= (accel * sin(radians(angle))) / 100
+        # Da die Gamegrid-Richtungen nicht, wie bei einem normalen Koordinatensystem, im Gegenuhrzeigersinn,
+        # sondern im Uhrzeigersinn verlaufen, muss man hier '+=' statt '-=' verwenden.
+        # Für den x-Wert ist dies nicht nötig.
+    
+    
 
 if __name__ == "__main__":
     grid = gg.GameGrid(800, 800, 1, None)
     
-    lander = Lander('sprites/jellyfish.gif', 1.62)
+    lander = Lander(
+        grid,
+        SPRITE['lander'],
+        1.62,
+        KEY['w'],
+        KEY['s'],
+        KEY['a'],
+        KEY['d']
+    )
     
-    grid.addActor(lander, lander.true_position)
+    grid.addActor(lander, lander.true_position.get_int_location(), 270)
     
     grid.setSimulationPeriod(10)
     grid.show()

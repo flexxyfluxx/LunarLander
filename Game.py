@@ -1,9 +1,11 @@
+# -*- coding: utf-8 -*-
+
 """
 class LunarGame:
 Hier wird das gesamte Spiel an sich verwaltet.
 """
 
-import gamegrid as gg
+import ch.aplu.jgamegrid as gg
 import java.awt.Color as jColors
 
 

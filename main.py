@@ -1,3 +1,4 @@
-import gamegrid as gg
+# -*- coding: utf-8 -*-
 
-s
+import ch.aplu.jgamegrid as gg
+
