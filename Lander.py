@@ -5,11 +5,11 @@ from Floacation import *
 from constants_etc import *
 
 class Lander(gg.Actor):
-    def __init__(self, grid, sprite, gravity, key_thrust_up, key_thrust_dn, key_rotate_left, key_rotate_right):
+    def __init__(self, grid, sprite, gravity, key_thrust_up, key_thrust_dn, key_rotate_left, key_rotate_right, key_kill_thrust):
         self.grid = grid
-        scaled_sprite = gg.GGBitmap.getScaledImage(sprite, 0.1, 0)
+        scaled_sprite = gg.GGBitmap.getScaledImage(sprite, 0.1, 90)
         
-        gg.Actor.__init__(self, scaled_sprite)
+        gg.Actor.__init__(self, True, scaled_sprite)
         self._gravity = gravity
         
         self.x_velocity = 0
@@ -40,17 +40,17 @@ class Lander(gg.Actor):
         if self.grid.isKeyPressed(self.key_thrust_up) and self.grid.isKeyPressed(self.key_thrust_dn):
             
             if self._thrust_momentum == LAST_UP:
-                self.thrust -= 1 if self.thrust > 0 else 0
+                self.thrust -= 5 if self.thrust > 0 else 0
                 
             elif self._thrust_momentum == LAST_DN:
-                self.thrust += 1 if self.thrust < 1000 else 0
+                self.thrust += 5 if self.thrust < 1000 else 0
         
         elif self.grid.isKeyPressed(self.key_thrust_up) and not self.grid.isKeyPressed(self.key_thrust_dn):
-            self.thrust += 1 if self.thrust < 1000 else 0
+            self.thrust += 5 if self.thrust < 1000 else 0
             self._thrust_momentum = LAST_UP
         
         elif self.grid.isKeyPressed(self.key_thrust_dn) and not self.grid.isKeyPressed(self.key_thrust_up):
-            self.thrust -= 1 if self.thrust > 0 else 0
+            self.thrust -= 5 if self.thrust > 0 else 0
             self._thrust_momentum = LAST_DN
         
         else:
@@ -61,17 +61,17 @@ class Lander(gg.Actor):
         if self.grid.isKeyPressed(self.key_rotate_left) and self.grid.isKeyPressed(self.key_rotate_right):
             
             if self._rotate_momentum == LAST_LEFT:
-                self.rotate(self.true_position.get_int_location(), 5)
+                self.turn(5)
                 
             elif self._rotate_momentum == LAST_RIGHT:
-                self.rotate(self.true_position.get_int_location(), -5)
+                self.turn(-5)
         
         elif self.grid.isKeyPressed(self.key_rotate_left) and not self.grid.isKeyPressed(self.key_rotate_right):
-            self.rotate(self.true_position.get_int_location(), -5)
+            self.turn(-5)
             self._rotate_momentum = LAST_LEFT
         
         elif self.grid.isKeyPressed(self.key_rotate_right) and not self.grid.isKeyPressed(self.key_rotate_left):
-            self.rotate(self.true_position.get_int_location(), 5)
+            self.turn(5)
             self._rotate_momentum = LAST_RIGHT
         
         else:
@@ -129,5 +129,6 @@ if __name__ == "__main__":
     grid.addActor(lander, lander.true_position.get_int_location(), 270)
     
     grid.setSimulationPeriod(10)
+    grid.setTitle("Lander Thruster Physics Test")
     grid.show()
     grid.doRun()
