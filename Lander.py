@@ -29,6 +29,7 @@ class Lander(gg.Actor):
         self.key_thrust_dn = key_thrust_dn
         self.key_rotate_left = key_rotate_left
         self.key_rotate_right = key_rotate_right
+        self.key_kill_thrust = key_kill_thrust
     
     
     def act(self):
@@ -37,7 +38,9 @@ class Lander(gg.Actor):
         Dann werden 
         """
         # thrust
-        if self.grid.isKeyPressed(self.key_thrust_up) and self.grid.isKeyPressed(self.key_thrust_dn):
+        if self.grid.isKeyPressed(self.key_kill_thrust):
+            self.thrust = 0
+        elif self.grid.isKeyPressed(self.key_thrust_up) and self.grid.isKeyPressed(self.key_thrust_dn):
             
             if self._thrust_momentum == LAST_UP:
                 self.thrust -= 5 if self.thrust > 0 else 0
@@ -79,7 +82,7 @@ class Lander(gg.Actor):
         # end of rotation
         
         
-        print(self.thrust, "|", self.getDirection())
+        print(str(self.thrust) +  " | " + str(self.getDirection()))
 
         self._apply_gravity()
         self._apply_thrust()
@@ -123,7 +126,8 @@ if __name__ == "__main__":
         KEY['w'],
         KEY['s'],
         KEY['a'],
-        KEY['d']
+        KEY['d'],
+        KEY['space']
     )
     
     grid.addActor(lander, lander.true_position.get_int_location(), 270)
