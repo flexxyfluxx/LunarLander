@@ -5,7 +5,8 @@ from Floacation import *
 from constants_etc import *
 
 class Lander(gg.Actor):
-    def __init__(self, grid, sprite, gravity, key_thrust_up, key_thrust_dn, key_rotate_left, key_rotate_right, key_kill_thrust):
+    def __init__(self, grid, sprite, gravity, key_thrust_up, key_thrust_dn,
+                        key_rotate_left, key_rotate_right, key_kill_thrust):
         self.grid = grid
         scaled_sprite = gg.GGBitmap.getScaledImage(sprite, 0.1, 90)
         
@@ -34,13 +35,16 @@ class Lander(gg.Actor):
     
     def act(self):
         """
-        Erst wird je nach Tastendruck Schub erhöht/gesenkt und die Drehung des Landers gesteuert.
-        Dann werden 
+        Erst wird je nach Tastendruck der Schub erhöht/gesenkt
+        und die Drehung des Landers gesteuert.
+        Dann werden mit momentanem Schub und Drehung die x-/y-Geschwindigkeiten verändert.
+        Schließlich bewegt sich der Lander entsprechend der Vektorgeschwindigkeiten.
         """
         # thrust
         if self.grid.isKeyPressed(self.key_kill_thrust):
             self.thrust = 0
-        elif self.grid.isKeyPressed(self.key_thrust_up) and self.grid.isKeyPressed(self.key_thrust_dn):
+        elif self.grid.isKeyPressed(self.key_thrust_up) \
+                and self.grid.isKeyPressed(self.key_thrust_dn):
             
             if self._thrust_momentum == LAST_UP:
                 self.thrust -= 5 if self.thrust > 0 else 0
@@ -48,11 +52,13 @@ class Lander(gg.Actor):
             elif self._thrust_momentum == LAST_DN:
                 self.thrust += 5 if self.thrust < 1000 else 0
         
-        elif self.grid.isKeyPressed(self.key_thrust_up) and not self.grid.isKeyPressed(self.key_thrust_dn):
+        elif self.grid.isKeyPressed(self.key_thrust_up) \
+                and not self.grid.isKeyPressed(self.key_thrust_dn):
             self.thrust += 5 if self.thrust < 1000 else 0
             self._thrust_momentum = LAST_UP
         
-        elif self.grid.isKeyPressed(self.key_thrust_dn) and not self.grid.isKeyPressed(self.key_thrust_up):
+        elif self.grid.isKeyPressed(self.key_thrust_dn) \
+                and not self.grid.isKeyPressed(self.key_thrust_up):
             self.thrust -= 5 if self.thrust > 0 else 0
             self._thrust_momentum = LAST_DN
         
@@ -61,7 +67,8 @@ class Lander(gg.Actor):
         # end of thrust
 
         # rotation
-        if self.grid.isKeyPressed(self.key_rotate_left) and self.grid.isKeyPressed(self.key_rotate_right):
+        if self.grid.isKeyPressed(self.key_rotate_left) \
+                and self.grid.isKeyPressed(self.key_rotate_right):
             
             if self._rotate_momentum == LAST_LEFT:
                 self.turn(5)
@@ -69,11 +76,13 @@ class Lander(gg.Actor):
             elif self._rotate_momentum == LAST_RIGHT:
                 self.turn(-5)
         
-        elif self.grid.isKeyPressed(self.key_rotate_left) and not self.grid.isKeyPressed(self.key_rotate_right):
+        elif self.grid.isKeyPressed(self.key_rotate_left) \
+                and not self.grid.isKeyPressed(self.key_rotate_right):
             self.turn(-5)
             self._rotate_momentum = LAST_LEFT
         
-        elif self.grid.isKeyPressed(self.key_rotate_right) and not self.grid.isKeyPressed(self.key_rotate_left):
+        elif self.grid.isKeyPressed(self.key_rotate_right) \
+                and not self.grid.isKeyPressed(self.key_rotate_left):
             self.turn(5)
             self._rotate_momentum = LAST_RIGHT
         
@@ -82,7 +91,8 @@ class Lander(gg.Actor):
         # end of rotation
         
         
-        print(str(self.thrust) +  " | " + str(self.getDirection()))
+        print(str(self.thrust) +  " | " + str(self.getDirection()) \
+            + " || " + str(self.y_velocity) + " | " + str(self.x_velocity))
 
         self._apply_gravity()
         self._apply_thrust()
@@ -110,9 +120,12 @@ class Lander(gg.Actor):
         
         self.x_velocity += (accel * cos(radians(angle))) / 100
         self.y_velocity -= (accel * sin(radians(angle))) / 100
-        # Da die Gamegrid-Richtungen nicht, wie bei einem normalen Koordinatensystem, im Gegenuhrzeigersinn,
-        # sondern im Uhrzeigersinn verlaufen, muss man hier '+=' statt '-=' verwenden.
-        # Für den x-Wert ist dies nicht nötig.
+        """
+        Da die Gamegrid-Richtungen nicht, wie bei einem normalen
+        Koordinatensystem, im Gegenuhrzeigersinn, sondern im Uhrzeigersinn
+        verlaufen, muss man für die y-Achse '-=' statt '+=' verwenden.
+        Für den x-Wert ist dies nicht nötig.
+        """
     
     
 
