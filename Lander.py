@@ -20,8 +20,8 @@ class Lander(gg.Actor):
         
         self.angle = EAST
         
-        self.fuel = start_fuel
-        self._start_fuel = start_fuel
+        self.fuel = config.FUEL_MASS
+        self._fuel_display_units = start_fuel
 
         self.thrust = 0
         self._thrust_momentum = None
@@ -32,7 +32,10 @@ class Lander(gg.Actor):
         self._key_rotate_left = key_rotate_left
         self._key_rotate_right = key_rotate_right
         self._key_kill_thrust = key_kill_thrust
-    
+
+    def add_velocity(self, x_vel=0, y_vel=0):
+        self.x_velocity += x_vel
+        self.y_velocity += y_vel
     
     def act(self):
         """
@@ -51,11 +54,11 @@ class Lander(gg.Actor):
                 self.thrust -= 5 if self.thrust > 0 else 0
                 
             elif self._thrust_momentum == LAST_DN:
-                self.thrust += 5 if self.thrust < 1000 else 0
+                self.thrust += 5 if self.thrust < config.THRUST_SCALE else 0
         
         elif self.grid.isKeyPressed(self._key_thrust_up) \
                 and not self.grid.isKeyPressed(self._key_thrust_dn):
-            self.thrust += 5 if self.thrust < 1000 else 0
+            self.thrust += 5 if self.thrust < config.THRUST_SCALE else 0
             self._thrust_momentum = LAST_UP
         
         elif self.grid.isKeyPressed(self._key_thrust_dn) \
@@ -93,7 +96,8 @@ class Lander(gg.Actor):
         
         
         print(str(self.thrust) +  " | " + str(self.getDirection()) \
-            + " || " + str(self.y_velocity) + " | " + str(self.x_velocity))
+            + " || " + str(self.y_velocity) + " | " + str(self.x_velocity)) \
+            + " || " + str(self.fuel)
 
         self._apply_gravity()
         self._apply_thrust()
@@ -113,16 +117,21 @@ class Lander(gg.Actor):
         self.y_velocity -= self._gravity / 100
     
     def get_mass(self):
-        return config.DRY_MASS + config.FUEL_MASS / self._start_fuel * self.fuel
+        return config.DRY_MASS +  self.fuel
 
     def _apply_thrust(self):
-        accel = 160 * self.thrust / self.get_mass()
+        if self.fuel <= 0:
+            self.thrust = 0
+            self.fuel = 0
+            return
+
+        accel = 160000 / config.THRUST_SCALE * self.thrust / self.get_mass()
         angle = self.getDirection()
         
         self.x_velocity += (accel * cos(radians(angle))) / 100
         self.y_velocity -= (accel * sin(radians(angle))) / 100
 
-        # TODO subtract fuel
+        self.fuel -= config.FUEL_CONSUMPTION / config.THRUST_SCALE * self.thrust / 100
         """
         Da die Gamegrid-Richtungen nicht, wie bei einem normalen
         Koordinatensystem, im Gegenuhrzeigersinn, sondern im Uhrzeigersinn
