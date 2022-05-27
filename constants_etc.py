@@ -16,6 +16,10 @@ class Cfg(): # Dataclass mit den Settings aus der INI.
     def __init__(self):
         self._parser = cp.ConfigParser()
         self._parser.read("settings.ini")
+
+        self.DRY_MASS = self._parser.getint('Lander','DryMass')
+        self.FUEL_MASS = self._parser.getint('Lander', 'FuelMass')
+        self.GRAVITY = self._parser.getfloat('Game', 'Gravity')
     
     
     

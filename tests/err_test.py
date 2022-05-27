@@ -1,3 +1,6 @@
-# -*- coding: utf-8 -*-
+class MyClass():
+    def __init__(self):
+        self.a = 1
 
-import umlaut
+obj = MyClass()
+print(obj.b)

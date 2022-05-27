@@ -5,8 +5,8 @@ from Floacation import *
 from constants_etc import *
 
 class Lander(gg.Actor):
-    def __init__(self, grid, sprite, gravity, key_thrust_up, key_thrust_dn,
-                        key_rotate_left, key_rotate_right, key_kill_thrust):
+    def __init__(self, grid, sprite, gravity, start_fuel, key_thrust_up, key_thrust_dn,
+            key_rotate_left, key_rotate_right, key_kill_thrust):
         self.grid = grid
         scaled_sprite = gg.GGBitmap.getScaledImage(sprite, 0.1, 90)
         
@@ -18,19 +18,20 @@ class Lander(gg.Actor):
         
         self.true_position = Floacation(64, 64)
         
-        self.angle = 0
+        self.angle = EAST
         
-        self.fuel = 1000
+        self.fuel = start_fuel
+        self._start_fuel = start_fuel
 
         self.thrust = 0
         self._thrust_momentum = None
         self._rotate_momentum = None
 
-        self.key_thrust_up = key_thrust_up
-        self.key_thrust_dn = key_thrust_dn
-        self.key_rotate_left = key_rotate_left
-        self.key_rotate_right = key_rotate_right
-        self.key_kill_thrust = key_kill_thrust
+        self._key_thrust_up = key_thrust_up
+        self._key_thrust_dn = key_thrust_dn
+        self._key_rotate_left = key_rotate_left
+        self._key_rotate_right = key_rotate_right
+        self._key_kill_thrust = key_kill_thrust
     
     
     def act(self):
@@ -41,10 +42,10 @@ class Lander(gg.Actor):
         Schließlich bewegt sich der Lander entsprechend der Vektorgeschwindigkeiten.
         """
         # thrust
-        if self.grid.isKeyPressed(self.key_kill_thrust):
+        if self.grid.isKeyPressed(self._key_kill_thrust):
             self.thrust = 0
-        elif self.grid.isKeyPressed(self.key_thrust_up) \
-                and self.grid.isKeyPressed(self.key_thrust_dn):
+        elif self.grid.isKeyPressed(self._key_thrust_up) \
+                and self.grid.isKeyPressed(self._key_thrust_dn):
             
             if self._thrust_momentum == LAST_UP:
                 self.thrust -= 5 if self.thrust > 0 else 0
@@ -52,13 +53,13 @@ class Lander(gg.Actor):
             elif self._thrust_momentum == LAST_DN:
                 self.thrust += 5 if self.thrust < 1000 else 0
         
-        elif self.grid.isKeyPressed(self.key_thrust_up) \
-                and not self.grid.isKeyPressed(self.key_thrust_dn):
+        elif self.grid.isKeyPressed(self._key_thrust_up) \
+                and not self.grid.isKeyPressed(self._key_thrust_dn):
             self.thrust += 5 if self.thrust < 1000 else 0
             self._thrust_momentum = LAST_UP
         
-        elif self.grid.isKeyPressed(self.key_thrust_dn) \
-                and not self.grid.isKeyPressed(self.key_thrust_up):
+        elif self.grid.isKeyPressed(self._key_thrust_dn) \
+                and not self.grid.isKeyPressed(self._key_thrust_up):
             self.thrust -= 5 if self.thrust > 0 else 0
             self._thrust_momentum = LAST_DN
         
@@ -67,8 +68,8 @@ class Lander(gg.Actor):
         # end of thrust
 
         # rotation
-        if self.grid.isKeyPressed(self.key_rotate_left) \
-                and self.grid.isKeyPressed(self.key_rotate_right):
+        if self.grid.isKeyPressed(self._key_rotate_left) \
+                and self.grid.isKeyPressed(self._key_rotate_right):
             
             if self._rotate_momentum == LAST_LEFT:
                 self.turn(5)
@@ -76,13 +77,13 @@ class Lander(gg.Actor):
             elif self._rotate_momentum == LAST_RIGHT:
                 self.turn(-5)
         
-        elif self.grid.isKeyPressed(self.key_rotate_left) \
-                and not self.grid.isKeyPressed(self.key_rotate_right):
+        elif self.grid.isKeyPressed(self._key_rotate_left) \
+                and not self.grid.isKeyPressed(self._key_rotate_right):
             self.turn(-5)
             self._rotate_momentum = LAST_LEFT
         
-        elif self.grid.isKeyPressed(self.key_rotate_right) \
-                and not self.grid.isKeyPressed(self.key_rotate_left):
+        elif self.grid.isKeyPressed(self._key_rotate_right) \
+                and not self.grid.isKeyPressed(self._key_rotate_left):
             self.turn(5)
             self._rotate_momentum = LAST_RIGHT
         
@@ -112,7 +113,7 @@ class Lander(gg.Actor):
         self.y_velocity -= self._gravity / 100
     
     def get_mass(self):
-        return 4280 + 10.92 * self.fuel
+        return config.DRY_MASS + config.FUEL_MASS / self._start_fuel * self.fuel
 
     def _apply_thrust(self):
         accel = 160 * self.thrust / self.get_mass()
@@ -120,6 +121,8 @@ class Lander(gg.Actor):
         
         self.x_velocity += (accel * cos(radians(angle))) / 100
         self.y_velocity -= (accel * sin(radians(angle))) / 100
+
+        # TODO subtract fuel
         """
         Da die Gamegrid-Richtungen nicht, wie bei einem normalen
         Koordinatensystem, im Gegenuhrzeigersinn, sondern im Uhrzeigersinn
@@ -136,6 +139,7 @@ if __name__ == "__main__":
         grid,
         SPRITE['lander'],
         1.62,
+        1000,
         KEY['w'],
         KEY['s'],
         KEY['a'],
