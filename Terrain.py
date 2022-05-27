@@ -24,10 +24,10 @@ class Terrain():
                         + [(self.plot[-2] + self.plot[-1] + self.plot[0]) / 3]
             self.smoothing += 1
 
-    def get_interpolated(self, spacing):
+    def get_interpolated(self, chunksize):
         out = []
         for c in range(len(self.plot)-1):
-            out += [ (float(self.plot[c]) + (float(self.plot[c+1]) - float(self.plot[c])) / spacing * current_step) for current_step in range(spacing) ]
+            out += [ (float(self.plot[c]) + (float(self.plot[c+1]) - float(self.plot[c])) / chunksize * current_step) for current_step in range(chunksize) ]
         
         # Deckel drauf!
         out += [self.plot[-1]]

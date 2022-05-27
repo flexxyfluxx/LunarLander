@@ -37,8 +37,8 @@ class LunarGame(gg.GameGrid):
     
     # Pertick Checks
     def act(self):
-        if self._wndw_height - self.lander.true_position.y < self.terrain.get_interpolated(self._terrain_chunksize)[self.lander.true_position.get_int_x()]:
-            print("Crash!")
+        if self._wndw_height - self.lander.true_position.y < self.terrain.get_interpolated(self._terrain_chunksize)[self.lander.true_position.get_int_x()] + 8:
+            self.lander.do_crash()
 
     def _setup_grid(self):
         self.setSimulationPeriod(10)

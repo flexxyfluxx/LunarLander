@@ -20,7 +20,8 @@ class Cfg(): # Dataclass mit den Settings aus der INI.
         self.DRY_MASS = self._parser.getint('Lander','DryMass')
         self.FUEL_MASS = self._parser.getint('Lander', 'FuelMass')
         self.GRAVITY = self._parser.getfloat('Game', 'Gravity')
-    
+        self.FUEL_CONSUMPTION = self._parser.getfloat('Lander', 'MaxFuelConsumption')
+        self.THRUST_SCALE = self._parser.getint('Lander', 'ThrustScale')
     
     
     def commit_to_ini(self):
@@ -106,7 +107,7 @@ ref = obj3
 print(obj3 is ref) # prints True
 print(obj3 == ref) # prints True
 
-Ich kann hiermit arbiträre Keys erstellen, die nur der Identifikation/Kennzeichnung dienen und keine weitere Bedeutung haben.
+Ich kann hiermit arbiträre Keys erstellen, die nur der Identifikation/Kennzeichnung dienen und keine weitere Bedeutung haben:
 """
 LAST_UP = object()
 LAST_DN = object()
