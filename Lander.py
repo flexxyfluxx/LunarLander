@@ -5,9 +5,9 @@ from Floacation import *
 from constants_etc import *
 
 class Lander(gg.Actor):
-    def __init__(self, grid, sprite, gravity, start_fuel, key_thrust_up, key_thrust_dn,
-            key_rotate_left, key_rotate_right, key_kill_thrust):
-        self.grid = grid
+    def __init__(self, grid_or_game, sprite, gravity, start_fuel, key_thrust_up, key_thrust_dn,
+            key_rotate_left, key_rotate_right, key_kill_thrust, start_location=gg.Location(0, 20)):
+        self.grid_or_game = grid_or_game
         scaled_sprite = gg.GGBitmap.getScaledImage(sprite, 0.1, 90)
         
         gg.Actor.__init__(self, True, scaled_sprite)
@@ -16,7 +16,7 @@ class Lander(gg.Actor):
         self.x_velocity = 0
         self.y_velocity = 0
         
-        self.true_position = Floacation(64, 64)
+        self.true_position = Floacation(start_location.x, start_location.y)
         
         self.angle = EAST
         
@@ -33,9 +33,10 @@ class Lander(gg.Actor):
         self._key_rotate_right = key_rotate_right
         self._key_kill_thrust = key_kill_thrust
 
-    def add_velocity(self, x_vel=0, y_vel=0):
-        self.x_velocity += x_vel
-        self.y_velocity += y_vel
+
+    def set_velocity(self, x_vel=0, y_vel=0):
+        self.x_velocity = x_vel
+        self.y_velocity = y_vel
     
     def act(self):
         """
@@ -44,11 +45,22 @@ class Lander(gg.Actor):
         Dann werden mit momentanem Schub und Drehung die x-/y-Geschwindigkeiten verändert.
         Schließlich bewegt sich der Lander entsprechend der Vektorgeschwindigkeiten.
         """
+        if not self.isVisible():return
+
+        if hasattr(self, 'crash_timer'):
+            if self.crash_timer >= 120:
+                self.hide()
+                return
+            self.show(self.crash_timer // 20)
+            self.crash_timer += 1
+            return
+
         # thrust
-        if self.grid.isKeyPressed(self._key_kill_thrust):
+        if self.grid_or_game.isKeyPressed(self._key_kill_thrust):
             self.thrust = 0
-        elif self.grid.isKeyPressed(self._key_thrust_up) \
-                and self.grid.isKeyPressed(self._key_thrust_dn):
+
+        elif self.grid_or_game.isKeyPressed(self._key_thrust_up) \
+                and self.grid_or_game.isKeyPressed(self._key_thrust_dn):
             
             if self._thrust_momentum == LAST_UP:
                 self.thrust -= 5 if self.thrust > 0 else 0
@@ -56,13 +68,13 @@ class Lander(gg.Actor):
             elif self._thrust_momentum == LAST_DN:
                 self.thrust += 5 if self.thrust < config.THRUST_SCALE else 0
         
-        elif self.grid.isKeyPressed(self._key_thrust_up) \
-                and not self.grid.isKeyPressed(self._key_thrust_dn):
+        elif self.grid_or_game.isKeyPressed(self._key_thrust_up) \
+                and not self.grid_or_game.isKeyPressed(self._key_thrust_dn):
             self.thrust += 5 if self.thrust < config.THRUST_SCALE else 0
             self._thrust_momentum = LAST_UP
         
-        elif self.grid.isKeyPressed(self._key_thrust_dn) \
-                and not self.grid.isKeyPressed(self._key_thrust_up):
+        elif self.grid_or_game.isKeyPressed(self._key_thrust_dn) \
+                and not self.grid_or_game.isKeyPressed(self._key_thrust_up):
             self.thrust -= 5 if self.thrust > 0 else 0
             self._thrust_momentum = LAST_DN
         
@@ -71,8 +83,8 @@ class Lander(gg.Actor):
         # end of thrust
 
         # rotation
-        if self.grid.isKeyPressed(self._key_rotate_left) \
-                and self.grid.isKeyPressed(self._key_rotate_right):
+        if self.grid_or_game.isKeyPressed(self._key_rotate_left) \
+                and self.grid_or_game.isKeyPressed(self._key_rotate_right):
             
             if self._rotate_momentum == LAST_LEFT:
                 self.turn(5)
@@ -80,13 +92,13 @@ class Lander(gg.Actor):
             elif self._rotate_momentum == LAST_RIGHT:
                 self.turn(-5)
         
-        elif self.grid.isKeyPressed(self._key_rotate_left) \
-                and not self.grid.isKeyPressed(self._key_rotate_right):
+        elif self.grid_or_game.isKeyPressed(self._key_rotate_left) \
+                and not self.grid_or_game.isKeyPressed(self._key_rotate_right):
             self.turn(-5)
             self._rotate_momentum = LAST_LEFT
         
-        elif self.grid.isKeyPressed(self._key_rotate_right) \
-                and not self.grid.isKeyPressed(self._key_rotate_left):
+        elif self.grid_or_game.isKeyPressed(self._key_rotate_right) \
+                and not self.grid_or_game.isKeyPressed(self._key_rotate_left):
             self.turn(5)
             self._rotate_momentum = LAST_RIGHT
         
@@ -94,10 +106,8 @@ class Lander(gg.Actor):
             self._rotate_momentum = None
         # end of rotation
         
+        self.print_stats()
         
-        print(str(self.thrust) +  " | " + str(self.getDirection()) \
-            + " || " + str(self.y_velocity) + " | " + str(self.x_velocity)) \
-            + " || " + str(self.fuel)
 
         self._apply_gravity()
         self._apply_thrust()
@@ -139,6 +149,25 @@ class Lander(gg.Actor):
         Für den x-Wert ist dies nicht nötig.
         """
     
+    def start_crash(self):
+        self.crash_timer = 0
+        self.set_velocity(0, 0)
+    
+    def setLocation(self, location):
+        self.true_position = Floacation(location.x, location.y)
+        gg.Actor.setLocation(self, location)
+    
+    def stop_crash(self, sprite_id=0):
+        gg.Actor.show(self, sprite_id)
+        try:
+            del self.crash_timer
+        except:
+            pass
+    
+    def print_stats(self):
+        print(str(self.thrust) +  " | " + str(self.getDirection()) \
+            + " || " + str(self.y_velocity) + " | " + str(self.x_velocity)) \
+            + " || " + str(self.fuel)
     
 
 if __name__ == "__main__":

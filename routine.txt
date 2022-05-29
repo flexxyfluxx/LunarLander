@@ -1,0 +1,18 @@
+land event:
+	speed = 0
+	
+	if crash:
+		play animation
+		status txt
+	
+	if land:
+		play animation
+		status txt
+		option: return to orbit (point multiplication)
+			if fuel is insufficient:
+				fuel++
+	
+	finally:
+		add pts
+		reset
+	
