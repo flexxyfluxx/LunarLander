@@ -16,10 +16,10 @@ class Floacation():
     
     
     def get_int_location(self):
-        return gg.Location(int(self.x), int(self.y))
+        return gg.Location(int(round(self.x)), int(round(self.y)))
     
     def get_int_x(self):
-        return int(self.x)
+        return int(round(self.x))
     
     def get_int_y(self):
-        return int(self.y)
+        return int(round(self.y))

@@ -87,22 +87,27 @@ class Lander(gg.Actor):
                 and self.grid_or_game.isKeyPressed(self._key_rotate_right):
             
             if self._rotate_momentum == LAST_LEFT:
-                self.turn(5)
+                self.turn(2)
                 
             elif self._rotate_momentum == LAST_RIGHT:
-                self.turn(-5)
+                self.turn(-2)
         
         elif self.grid_or_game.isKeyPressed(self._key_rotate_left) \
                 and not self.grid_or_game.isKeyPressed(self._key_rotate_right):
-            self.turn(-5)
+            self.turn(-2)
             self._rotate_momentum = LAST_LEFT
         
         elif self.grid_or_game.isKeyPressed(self._key_rotate_right) \
                 and not self.grid_or_game.isKeyPressed(self._key_rotate_left):
-            self.turn(5)
+            self.turn(2)
             self._rotate_momentum = LAST_RIGHT
         
         else:
+            rounded_direction = self.getDirection()
+            rounded_direction /= 15
+            rounded_direction = round(rounded_direction)
+            rounded_direction *= 15
+            self.setDirection(rounded_direction)
             self._rotate_momentum = None
         # end of rotation
         
@@ -140,21 +145,21 @@ class Lander(gg.Actor):
         
         self.x_velocity += (accel * cos(radians(angle))) / 100
         self.y_velocity -= (accel * sin(radians(angle))) / 100
-
-        self.fuel -= config.FUEL_CONSUMPTION / config.THRUST_SCALE * self.thrust / 100
         """
         Da die Gamegrid-Richtungen nicht, wie bei einem normalen
         Koordinatensystem, im Gegenuhrzeigersinn, sondern im Uhrzeigersinn
         verlaufen, muss man für die y-Achse '-=' statt '+=' verwenden.
         Für den x-Wert ist dies nicht nötig.
         """
+
+        self.fuel -= config.FUEL_CONSUMPTION / config.THRUST_SCALE * self.thrust / 100
     
     def start_crash(self):
         self.crash_timer = 0
         self.set_velocity(0, 0)
     
     def setLocation(self, location):
-        self.true_position = Floacation(location.x, location.y)
+        self.true_position.x, self.true_position.y = location.x, location.y
         gg.Actor.setLocation(self, location)
     
     def stop_crash(self, sprite_id=0):

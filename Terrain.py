@@ -17,7 +17,7 @@ class Terrain():
         
     
     def _make_plot(self, size, smoothing):
-        self.plot = [self.gen.randint(self._lower, self._upper) for c in range(size)]
+        self.plot = [self.gen.randint(self._lower, self._upper) for c in range(size+1)]
         self.smooth_plot(smoothing)
 
     def print_plot(self):
@@ -31,7 +31,6 @@ class Terrain():
             self.plot = [(self.plot[c-1] + self.plot[c] + self.plot[c+1]) / 3 for c in range(len(self.plot) - 1)] \
                         + [(self.plot[-2] + self.plot[-1] + self.plot[0]) / 3]
             self.smoothing += 1
-        return self
 
     def get_interpolated(self, chunksize):
         out = []
@@ -44,18 +43,15 @@ class Terrain():
         return out
     
     def push_to_grid(self, grid, show_seed=True):
-        terrain_length = len(self.plot)
+        terrain_length = len(self.plot)-1
         ratio = grid.getNbHorzCells() / terrain_length
         grid_height = grid.getNbVertCells()
         background = grid.getBg()
         background.setLineWidth(1)
 
         for c in range(5):
-            for z in range(1, terrain_length):
+            for z in range(1, terrain_length+1):
                 background.drawLine(int(round((z-1) * ratio)), grid_height - self.plot[z-1] + c, int(round(z * ratio)), grid_height - self.plot[z] + c)
-            
-            background.drawLine(int(round(terrain_length-1) * ratio), grid_height - self.plot[terrain_length-1] + c,
-                                    int(round(terrain_length * ratio)), grid_height - self.plot[terrain_length-1] + c)
         
         if show_seed:
             seed_display = gg.GGTextField(
@@ -67,13 +63,10 @@ class Terrain():
             seed_display.setFont(Font("Arial", Font.PLAIN, 24))
             seed_display.setTextColor(Color.WHITE)
             seed_display.show()
-        
-        return self
     
     def adjust(self, lower):
         adjustment = min(self.plot) - lower
         self.plot = [c - adjustment for c in self.plot]
-        return self
 
 
     def next(self):
@@ -81,11 +74,10 @@ class Terrain():
         self._make_plot(self.size, self.smoothing)
         self.adjust(10)
         self.smoothing = tmp_smoothing
-        return self
     
 
 if __name__ == "__main__":
-    terra = Terrain(100, 0, 1200, smoothing=11)
+    terra = Terrain(100, 0, 1200, smoothing=13, seed=11)
     grid = gg.GameGrid(800, 800, 1)
     terra.push_to_grid(grid, True)
     grid.show()
