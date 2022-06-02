@@ -8,25 +8,31 @@ class Lander(gg.Actor):
     def __init__(self, grid_or_game, sprite, gravity, start_fuel, key_thrust_up, key_thrust_dn,
             key_rotate_left, key_rotate_right, key_kill_thrust, start_location=gg.Location(0, 20)):
         self.grid_or_game = grid_or_game
+
+        # geg. Sprite runterskalieren
         scaled_sprite = gg.GGBitmap.getScaledImage(sprite, 0.1, 90)
         
         gg.Actor.__init__(self, True, scaled_sprite)
         self._gravity = gravity
         
+        # Geschwindigkeitsvektoren initialisieren
         self.x_velocity = 0
         self.y_velocity = 0
         
+        # "wahre" Location als Floacation speichern, um Nachkommastellen nicht zu verlieren
         self.true_position = Floacation(start_location.x, start_location.y)
         
+        # Startrichtung
         self.angle = EAST
         
-        self.fuel = config.FUEL_MASS
-        self._fuel_display_units = start_fuel
+        self.fuel = config.FUEL_MASS # Start-Treibstoff aus der Config holen
 
+        # Thrust-Attribute initialisieren
         self.thrust = 0
         self._thrust_momentum = None
         self._rotate_momentum = None
 
+        # Keybinds speichern
         self._key_thrust_up = key_thrust_up
         self._key_thrust_dn = key_thrust_dn
         self._key_rotate_left = key_rotate_left
@@ -155,6 +161,7 @@ class Lander(gg.Actor):
         self.fuel -= config.FUEL_CONSUMPTION / config.THRUST_SCALE * self.thrust / 100
     
     def start_crash(self):
+        print("Crash!")
         self.crash_timer = 0
         self.set_velocity(0, 0)
     

@@ -66,6 +66,8 @@ class LunarGameHUD(gg.Actor):
             element.setTextColor(Color.WHITE)
         for element in self.x_vel_field:
             element.setTextColor(Color.WHITE)
+        
+        self.warn_out_of_bounds.setTextColor(Color.RED)
 
         self.score_field[0].setText("Score:")
         self.time_field[0].setText("Time:")
@@ -94,14 +96,35 @@ class LunarGameHUD(gg.Actor):
             self.fuel_field[1].setText(str(int(round(lander.fuel))))
             self.fuel_field[1].setLocation(gg.Location(self._third_left_align - self.fuel_field[1].getTextWidth(), 50))
 
-            self.altitude_field[1].setText(str(round(self.grid_or_game.wndw_height - lander.true_position.y - terrain.get_interpolated(self.grid_or_game.terrain_chunksize)[lander.true_position.get_int_x()])))
-            self.altitude_field[1].setLocation(gg.Location(self._right_align - self.altitude_field[1].getTextWidth(), 10))
+            """
+            Falls aufgrund eines Fehlers (zB. Index out of range, wenn der Lander OOB ist) keine Höhe des Landers gefunden werden kann,
+            wird diese unter Miteinbezug der Lander-Geschwindigkeit errechnet.
+            """
+            try:
+                self._last_altitude = self.grid_or_game.wndw_height - lander.true_position.y - terrain.get_interpolated(self.grid_or_game.terrain_chunksize)[lander.true_position.get_int_x()]
+                self.altitude_field[1].setText(str(round(self._last_altitude)))
+            except:
+                self._last_altitude -= lander.y_velocity / 100
+                self.altitude_field[1].setText(str(round(self._last_altitude)))
+            finally:
+                self.altitude_field[1].setLocation(gg.Location(self._right_align - self.altitude_field[1].getTextWidth(), 10))
 
             self.y_vel_field[1].setText(str(round(lander.y_velocity, 2)) + (u"↑" if lander.y_velocity > 0 else u"↓"))
             self.y_vel_field[1].setLocation(gg.Location(self._right_align - self.y_vel_field[1].getTextWidth(), 30))
 
             self.x_vel_field[1].setText(str(round(abs(lander.x_velocity), 2)) + (u"→" if lander.x_velocity > 0 else u"←"))
             self.x_vel_field[1].setLocation(gg.Location(self._right_align - self.x_vel_field[1].getTextWidth(), 50))
+    
+            if hasattr(self.grid_or_game, 'out_of_bounds_timer'):
+                print("Out of bounds!")
+                """
+                if self.grid_or_game.out_of_bounds_timer // 50 > 24:
+                    if self.warn_out_of_bounds.isVisible(): self.warn_out_of_bounds.hide()
+                elif self.grid_or_game.out_of_bounds_timer // 50 < 25:
+                    if not self.warn_out_of_bounds.isVisible(): self.warn_out_of_bounds.show()
+            else:
+                if self.warn_out_of_bounds.isVisible(): self.warn_out_of_bounds.hide()
+                """
     
     def show(self):
         for element in self.score_field:
