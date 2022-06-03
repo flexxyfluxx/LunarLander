@@ -5,8 +5,7 @@ from Floacation import *
 from constants_etc import *
 
 class Lander(gg.Actor):
-    def __init__(self, grid_or_game, sprite, gravity, start_fuel, key_thrust_up, key_thrust_dn,
-            key_rotate_left, key_rotate_right, key_kill_thrust, start_location=gg.Location(0, 20)):
+    def __init__(self, grid_or_game, sprite, gravity, key_thrust_up, key_thrust_dn, key_rotate_left,key_rotate_right, key_kill_thrust, key_max_thrust, start_location=gg.Location(0, 20)):
         self.grid_or_game = grid_or_game
 
         # geg. Sprite runterskalieren
@@ -38,6 +37,7 @@ class Lander(gg.Actor):
         self._key_rotate_left = key_rotate_left
         self._key_rotate_right = key_rotate_right
         self._key_kill_thrust = key_kill_thrust
+        self._key_max_thrust = key_max_thrust
 
 
     def set_velocity(self, x_vel=0, y_vel=0):
@@ -64,6 +64,9 @@ class Lander(gg.Actor):
         # thrust
         if self.grid_or_game.isKeyPressed(self._key_kill_thrust):
             self.thrust = 0
+
+        elif self.grid_or_game.isKeyPressed(self._key_max_thrust):
+            self.thrust = config.THRUST_SCALE
 
         elif self.grid_or_game.isKeyPressed(self._key_thrust_up) \
                 and self.grid_or_game.isKeyPressed(self._key_thrust_dn):
@@ -145,8 +148,13 @@ class Lander(gg.Actor):
             self.thrust = 0
             self.fuel = 0
             return
-
+        spent_fuel = config.FUEL_CONSUMPTION / config.THRUST_SCALE * self.thrust / 100
+        mass = self.get_mass()
+        """ naive
         accel = 160000 / config.THRUST_SCALE * self.thrust / self.get_mass()
+        """ # smort
+        accel = 3180 * log(mass / (mass - spent_fuel*10) if self.fuel > spent_fuel else 1)
+        #"""
         angle = self.getDirection()
         
         self.x_velocity += (accel * cos(radians(angle))) / 100
@@ -158,7 +166,7 @@ class Lander(gg.Actor):
         Für den x-Wert ist dies nicht nötig.
         """
 
-        self.fuel -= config.FUEL_CONSUMPTION / config.THRUST_SCALE * self.thrust / 100
+        self.fuel -= spent_fuel
     
     def start_crash(self):
         print("Crash!")
@@ -189,12 +197,12 @@ if __name__ == "__main__":
         grid,
         SPRITE['lander'],
         1.62,
-        1000,
         KEY['w'],
         KEY['s'],
         KEY['a'],
         KEY['d'],
-        KEY['space']
+        KEY['q'],
+        KEY['e']
     )
     
     grid.addActor(lander, lander.true_position.get_int_location(), 270)

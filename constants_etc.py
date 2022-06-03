@@ -9,6 +9,7 @@ und Konstanten zugewiesen.
 """ Imports: """
 from os.path import abspath # oh nyo the namespace OwO~ onwy impowt whats neccessawy~~ rawr :3
 import ConfigParser as cp
+from java.awt import Color
 
 # ----- SETTINGS VON INI LADEN -----
 
@@ -45,6 +46,10 @@ EAST = 0
 SOUTH = 90
 WEST = 180
 NORTH = 270
+
+""" Farben: """
+GRAY = Color(153, 153, 153)
+WHITE = Color.WHITE
 
 """ Keypress-Dict """
 KEY = {

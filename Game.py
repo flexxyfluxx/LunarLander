@@ -28,18 +28,16 @@ class LunarGame(gg.GameGrid):
             self,
             SPRITE['lander'],
             1.62,
-            start_fuel,
             KEY['w'],
             KEY['s'],
             KEY['a'],
             KEY['d'],
-            KEY['space']
+            KEY['q'],
+            KEY['e']
         )
         self.lander.set_velocity(80, 0)
 
-        self.terrain = Terrain(self.wndw_width // self.terrain_chunksize, -100, 600)
-        self.terrain.smooth_plot(12)
-        self.terrain.adjust(64)
+        self.terrain = Terrain(int(round(self.wndw_width / self.terrain_chunksize)), -100, 600, smoothing=13)
         self.terrain_interpol = self.terrain.get_interpolated(self.terrain_chunksize)
 
         self.hud = LunarGameHUD(self)

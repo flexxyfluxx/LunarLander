@@ -1,3 +1,0 @@
-empty = []
-
-print(zip(*empty))
