@@ -5,13 +5,13 @@ from Floacation import *
 from constants_etc import *
 
 class Lander(gg.Actor):
-    def __init__(self, grid_or_game, sprite, gravity, key_thrust_up, key_thrust_dn, key_rotate_left,key_rotate_right, key_kill_thrust, key_max_thrust, start_location=gg.Location(0, 20)):
+    def __init__(self, grid_or_game, sprites, gravity, key_thrust_up, key_thrust_dn, key_rotate_left,key_rotate_right, key_kill_thrust, key_max_thrust, start_location=gg.Location(0, 20)):
         self.grid_or_game = grid_or_game
 
         # geg. Sprite runterskalieren
-        scaled_sprite = gg.GGBitmap.getScaledImage(sprite, 0.1, 90)
+        scaled_sprites = [gg.GGBitmap.getScaledImage(sprite, 0.1, 90) for sprite in sprites]
         
-        gg.Actor.__init__(self, True, scaled_sprite)
+        gg.Actor.__init__(self, True, scaled_sprites)
         self._gravity = gravity
         
         # Geschwindigkeitsvektoren initialisieren
