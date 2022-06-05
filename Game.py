@@ -35,7 +35,7 @@ class LunarGame(gg.GameGrid):
             KEY['q'],
             KEY['e']
         )
-        self.lander.set_velocity(80, 0)
+        self.lander.set_velocity(40, 0)
 
         self.terrain = Terrain(int(round(self.wndw_width / self.terrain_chunksize)), -100, 600, smoothing=13)
         self.terrain_interpol = self.terrain.get_interpolated(self.terrain_chunksize)

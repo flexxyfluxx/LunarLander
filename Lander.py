@@ -5,12 +5,15 @@ from Floacation import *
 from constants_etc import *
 
 class Lander(gg.Actor):
-    def __init__(self, grid_or_game, sprites, gravity, key_thrust_up, key_thrust_dn, key_rotate_left,key_rotate_right, key_kill_thrust, key_max_thrust, start_location=gg.Location(0, 20)):
+    def __init__(self, grid_or_game, sprites, gravity, key_thrust_up, key_thrust_dn, key_rotate_left,key_rotate_right, key_kill_thrust, key_max_thrust, start_location):
         self.grid_or_game = grid_or_game
 
         # geg. Sprite runterskalieren
-        scaled_sprites = [gg.GGBitmap.getScaledImage(sprite, 0.1, 90) for sprite in sprites]
         
+        scaled_sprites = gg.GGBitmap.getScaledImage(sprites, 0.125, 90) if isinstance(sprites, 'str')\
+                    else [gg.GGBitmap.getScaledImage(sprite, 0.125, 90) for sprite in sprites]
+        
+        print(scaled_sprites)
         gg.Actor.__init__(self, True, scaled_sprites)
         self._gravity = gravity
         
@@ -141,7 +144,7 @@ class Lander(gg.Actor):
         self.y_velocity -= self._gravity / 100
     
     def get_mass(self):
-        return config.DRY_MASS +  self.fuel
+        return config.DRY_MASS + self.fuel
 
     def _apply_thrust(self):
         if self.fuel <= 0:
@@ -202,7 +205,8 @@ if __name__ == "__main__":
         KEY['a'],
         KEY['d'],
         KEY['q'],
-        KEY['e']
+        KEY['e'],
+        gg.Location(0,20)
     )
     
     grid.addActor(lander, lander.true_position.get_int_location(), 270)
