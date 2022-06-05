@@ -10,7 +10,7 @@ class Lander(gg.Actor):
 
         # geg. Sprite runterskalieren
         
-        scaled_sprites = gg.GGBitmap.getScaledImage(sprites, 0.125, 90) if isinstance(sprites, 'str')\
+        scaled_sprites = gg.GGBitmap.getScaledImage(sprites, 0.125, 90) if isinstance(sprites, str)\
                     else [gg.GGBitmap.getScaledImage(sprite, 0.125, 90) for sprite in sprites]
         
         print(scaled_sprites)

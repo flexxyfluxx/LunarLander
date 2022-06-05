@@ -33,7 +33,8 @@ class LunarGame(gg.GameGrid):
             KEY['a'],
             KEY['d'],
             KEY['q'],
-            KEY['e']
+            KEY['e'],
+            gg.Location(0,20)
         )
         self.lander.set_velocity(40, 0)
 
@@ -102,11 +103,11 @@ class LunarGame(gg.GameGrid):
         except:
             pass
         try:
-            out = out or (self.wndw_height - lander_y < self.terrain_interpol[lander_x+3]+5) # Rechts
+            out = out or (self.wndw_height - lander_y < self.terrain_interpol[lander_x+5]+5) # Rechts
         except:
             pass
         try:
-            out = out or (self.wndw_height - lander_y < self.terrain_interpol[lander_x-3]+5) # Links
+            out = out or (self.wndw_height - lander_y < self.terrain_interpol[lander_x-5]+5) # Links
         except:
             pass
 
