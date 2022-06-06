@@ -11,10 +11,10 @@ from Terrain import *
 from Lander import *
 from constants_etc import *
 from LunarGameHUD import *
-
+from Player import *
 
 class LunarGame(gg.GameGrid):
-    def __init__(self, start_fuel, wndw_width=1280, wndw_height=960, terrain_chunksize=8):
+    def __init__(self, player_name, wndw_width=1280, wndw_height=960, terrain_chunksize=8):
         self.wndw_width = wndw_width
         self.wndw_height = wndw_height
         self.score = 0
@@ -23,6 +23,9 @@ class LunarGame(gg.GameGrid):
         gg.GameGrid.__init__(self, wndw_width, wndw_height, 1, None, True)
 
         self.terrain_chunksize = terrain_chunksize
+
+        self.player = Player.load(player_name)
+        self.score = 0
         
         self.lander = Lander(
             self,

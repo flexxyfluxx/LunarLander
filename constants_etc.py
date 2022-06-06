@@ -23,12 +23,12 @@ class Cfg(): # Dataclass mit den Settings aus der INI.
         self.GRAVITY = self._parser.getfloat('Game', 'Gravity')
         self.FUEL_CONSUMPTION = self._parser.getfloat('Lander', 'MaxFuelConsumption')
         self.THRUST_SCALE = self._parser.getint('Lander', 'ThrustScale')
+        self.FUEL_VELOCITY = self._parser.getint('Lander', 'FuelVelocity')
     
     
     def commit_to_ini(self):
-        fileobj = open('settings.ini', 'w')
-        self._parser.write(fileobj)
-        fileobj.close()
+        with open('settings.ini', 'w') as file:
+            self._parser.write(file)
 
 
 config = Cfg()

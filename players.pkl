@@ -1,0 +1,17 @@
+(dp0
+S'Bob'
+p1
+(i__main__
+Player
+p2
+(dp3
+S'name'
+p4
+g1
+sS'scores'
+p5
+(lp6
+sS'high_score'
+p7
+I0
+sbs.

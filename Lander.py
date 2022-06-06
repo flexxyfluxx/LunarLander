@@ -99,19 +99,27 @@ class Lander(gg.Actor):
                 and self.grid_or_game.isKeyPressed(self._key_rotate_right):
             
             if self._rotate_momentum == LAST_LEFT:
-                self.turn(2)
+                if self.fuel > 0:
+                    self.turn(2)
+                    self.fuel -= 1
                 
             elif self._rotate_momentum == LAST_RIGHT:
-                self.turn(-2)
+                if self.fuel > 0:
+                    self.turn(-2)
+                    self.fuel -= 1
         
         elif self.grid_or_game.isKeyPressed(self._key_rotate_left) \
                 and not self.grid_or_game.isKeyPressed(self._key_rotate_right):
-            self.turn(-2)
+            if self.fuel > 0:
+                self.turn(-2)
+                self.fuel -= 1
             self._rotate_momentum = LAST_LEFT
         
         elif self.grid_or_game.isKeyPressed(self._key_rotate_right) \
                 and not self.grid_or_game.isKeyPressed(self._key_rotate_left):
-            self.turn(2)
+            if self.fuel > 0:
+                self.turn(2)
+                self.fuel -= 1
             self._rotate_momentum = LAST_RIGHT
         
         else:
@@ -153,11 +161,12 @@ class Lander(gg.Actor):
             return
         spent_fuel = config.FUEL_CONSUMPTION / config.THRUST_SCALE * self.thrust / 100
         mass = self.get_mass()
-        """ naive
-        accel = 160000 / config.THRUST_SCALE * self.thrust / self.get_mass()
-        """ # smort
-        accel = 3180 * log(mass / (mass - spent_fuel*10) if self.fuel > spent_fuel else 1)
-        #"""
+        fuel_consumption = self.thrust / config.THRUST_SCALE * config.FUEL_CONSUMPTION
+
+
+        accel = -config.FUEL_VELOCITY * log(1-(fuel_consumption / mass))
+
+
         angle = self.getDirection()
         
         self.x_velocity += (accel * cos(radians(angle))) / 100
@@ -171,10 +180,11 @@ class Lander(gg.Actor):
 
         self.fuel -= spent_fuel
     
-    def start_crash(self):
+    def do_crash(self):
         print("Crash!")
         self.crash_timer = 0
         self.set_velocity(0, 0)
+    
     
     def setLocation(self, location):
         self.true_position.x, self.true_position.y = location.x, location.y
