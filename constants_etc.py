@@ -13,11 +13,17 @@ from java.awt import Color
 
 # ----- SETTINGS VON INI LADEN -----
 
-class Cfg(): # Dataclass mit den Settings aus der INI.
+class Cfg():
+    """
+    Diese Klasse verwaltet die Konfigurationswerte, die vom restlichen Programm verwendet werden.
+    Sie kann die Werte in settings.ini lesen, verändern und wieder in die Datei schreiben.
+    """
     def __init__(self):
+        # initialisiere den Parser
         self._parser = cp.ConfigParser()
         self._parser.read("settings.ini")
 
+        # hole geparste Werte aus dem Parser
         self.DRY_MASS = self._parser.getint('Lander','DryMass')
         self.FUEL_MASS = self._parser.getint('Lander', 'FuelMass')
         self.GRAVITY = self._parser.getfloat('Game', 'Gravity')
@@ -25,6 +31,13 @@ class Cfg(): # Dataclass mit den Settings aus der INI.
         self.THRUST_SCALE = self._parser.getint('Lander', 'ThrustScale')
         self.FUEL_VELOCITY = self._parser.getint('Lander', 'FuelVelocity')
     
+    def change(self, attr, val):
+        try:
+            self.attr = float(val)
+        except AttributeError as err:
+            print("[ERROR] "+repr(err)+" Attribute not found!")
+        except ValueError as err:
+            print("[ERROR] "+repr(err)+" Value must be a number!")
     
     def commit_to_ini(self):
         with open('settings.ini', 'w') as file:
@@ -120,3 +133,17 @@ LAST_LEFT = object()
 LAST_RIGHT = object()
 
 # ----- ENDE KONSTANTEN -----
+
+# ----- FUNKTIONEN -----
+def unzip(zipped):
+    """
+    Umkehroperation von zip()
+    """
+    return zip(*zipped)
+
+def getindex(val, arr):
+    """
+    Finde denjenigen Index in einem Array an einzigartigen Werten, dessen Wert gleich dem geg. ist.
+    """
+    for index in range(len(arr)):
+        if arr[index] == val: return index

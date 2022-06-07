@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 import pickle as p
-from os.path import isfile
 
 
 class Player():
@@ -26,7 +25,7 @@ class Player():
         p.dump(_players, open('players.pkl', 'wb'))
 
     @classmethod
-    def load(self,name):
+    def load(self, name):
         name = str(name)
         return _players[name] if name in _players.keys() \
             else Player(name)

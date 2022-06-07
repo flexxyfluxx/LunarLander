@@ -13,7 +13,6 @@ class Lander(gg.Actor):
         scaled_sprites = gg.GGBitmap.getScaledImage(sprites, 0.125, 90) if isinstance(sprites, str)\
                     else [gg.GGBitmap.getScaledImage(sprite, 0.125, 90) for sprite in sprites]
         
-        print(scaled_sprites)
         gg.Actor.__init__(self, True, scaled_sprites)
         self._gravity = gravity
         
@@ -54,14 +53,14 @@ class Lander(gg.Actor):
         Dann werden mit momentanem Schub und Drehung die x-/y-Geschwindigkeiten verändert.
         Schließlich bewegt sich der Lander entsprechend der Vektorgeschwindigkeiten.
         """
-        if not self.isVisible():return
 
-        if hasattr(self, 'crash_timer'):
-            if self.crash_timer >= 120:
-                self.hide()
-                return
-            self.show(self.crash_timer // 20)
-            self.crash_timer += 1
+        if not self.isVisible(): return
+
+        if self.fuel <= 0:
+            if self._last_rotation == LAST_RIGHT: self.turn(2)
+            elif self._last_rotation == LAST_LEFT: self.turn(-2)
+            self._apply_gravity()
+            self.move()
             return
 
         # thrust
@@ -92,6 +91,7 @@ class Lander(gg.Actor):
         
         else:
             self._thrust_momentum = None
+            self._last_rotation = None
         # end of thrust
 
         # rotation
@@ -99,28 +99,28 @@ class Lander(gg.Actor):
                 and self.grid_or_game.isKeyPressed(self._key_rotate_right):
             
             if self._rotate_momentum == LAST_LEFT:
-                if self.fuel > 0:
-                    self.turn(2)
-                    self.fuel -= 1
+                self.turn(2)
+                self.fuel -= 1
+                self._last_rotation = LAST_RIGHT
                 
             elif self._rotate_momentum == LAST_RIGHT:
-                if self.fuel > 0:
-                    self.turn(-2)
-                    self.fuel -= 1
+                self.turn(-2)
+                self.fuel -= 1
+                self._last_rotation = LAST_LEFT
         
         elif self.grid_or_game.isKeyPressed(self._key_rotate_left) \
                 and not self.grid_or_game.isKeyPressed(self._key_rotate_right):
-            if self.fuel > 0:
-                self.turn(-2)
-                self.fuel -= 1
+            self.turn(-2)
+            self.fuel -= 1
             self._rotate_momentum = LAST_LEFT
+            self._last_rotation = LAST_LEFT
         
         elif self.grid_or_game.isKeyPressed(self._key_rotate_right) \
                 and not self.grid_or_game.isKeyPressed(self._key_rotate_left):
-            if self.fuel > 0:
-                self.turn(2)
-                self.fuel -= 1
+            self.turn(2)
+            self.fuel -= 1
             self._rotate_momentum = LAST_RIGHT
+            self._last_rotation = LAST_RIGHT
         
         else:
             rounded_direction = self.getDirection()
@@ -136,12 +136,12 @@ class Lander(gg.Actor):
 
         self._apply_gravity()
         self._apply_thrust()
-        self.true_position.x += self.x_velocity / 100
-        self.true_position.y -= self.y_velocity / 100
         self.move()
 
     
     def move(self):
+        self.true_position.x += self.x_velocity / 100
+        self.true_position.y -= self.y_velocity / 100
         self.setX(self.true_position.get_int_x())
         self.setY(self.true_position.get_int_y())
 
@@ -155,22 +155,17 @@ class Lander(gg.Actor):
         return config.DRY_MASS + self.fuel
 
     def _apply_thrust(self):
-        if self.fuel <= 0:
-            self.thrust = 0
-            self.fuel = 0
-            return
         spent_fuel = config.FUEL_CONSUMPTION / config.THRUST_SCALE * self.thrust / 100
         mass = self.get_mass()
-        fuel_consumption = self.thrust / config.THRUST_SCALE * config.FUEL_CONSUMPTION
 
 
-        accel = -config.FUEL_VELOCITY * log(1-(fuel_consumption / mass))
-
+        accel = -config.FUEL_VELOCITY * log(1-(spent_fuel / mass))
+        print(accel)
 
         angle = self.getDirection()
         
-        self.x_velocity += (accel * cos(radians(angle))) / 100
-        self.y_velocity -= (accel * sin(radians(angle))) / 100
+        self.x_velocity += (accel * cos(radians(angle)))
+        self.y_velocity -= (accel * sin(radians(angle)))
         """
         Da die Gamegrid-Richtungen nicht, wie bei einem normalen
         Koordinatensystem, im Gegenuhrzeigersinn, sondern im Uhrzeigersinn
@@ -179,12 +174,18 @@ class Lander(gg.Actor):
         """
 
         self.fuel -= spent_fuel
+        if self.fuel < 0: self.fuel = 0
     
     def do_crash(self):
-        print("Crash!")
-        self.crash_timer = 0
-        self.set_velocity(0, 0)
+        self.set_velocity(0,0)
+        self.delay(250)
+        for c in range(6):
+            self.show(c)
+            self.delay(250)
+        self.delay(250)
     
+    def do_land(self):
+        self.set_velocity(0,0)
     
     def setLocation(self, location):
         self.true_position.x, self.true_position.y = location.x, location.y
@@ -192,15 +193,12 @@ class Lander(gg.Actor):
     
     def stop_crash(self, sprite_id=0):
         gg.Actor.show(self, sprite_id)
-        try:
-            del self.crash_timer
-        except:
-            pass
+        if hasattr(self, 'crash_timer'): del self.crash_timer
     
     def print_stats(self):
         print(str(self.thrust) +  " | " + str(self.getDirection()) \
-            + " || " + str(self.y_velocity) + " | " + str(self.x_velocity)) \
-            + " || " + str(self.fuel)
+            + " || " + str(self.y_velocity) + " | " + str(self.x_velocity) \
+            + " || " + str(self.fuel))
     
 
 if __name__ == "__main__":

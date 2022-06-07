@@ -1,13 +1,17 @@
 # -*- coding: utf-8 -*-
 
-from __future__ import print_function
 import ch.aplu.jgamegrid as gg
 from constants_etc import *
 from java.awt import Font
 import random as r
 
 class Terrain():
-    def __init__(self, size, min, max, landing_zone_count=None, seed=r.randint(-2147483648, 2147483647), smoothing=0):
+    """
+    TERRAIN:
+    Das Terrain besteht hier aus Chunks, also kleinen Abschnitten, bei denen jeweils rechts und links eine Höhe gegeben ist.
+    Zwischen diesen geg. Werten verläuft das Terrain linear, da dies am einfachsten zu berechnen ist.
+    """
+    def __init__(self, size, min, max, landing_zone_count=range(4,6), seed=r.randint(-2147483648, 2147483647), smoothing=0):
         self._upper = max
         self._lower = min
 
@@ -15,15 +19,12 @@ class Terrain():
         self.seed = seed
         self.gen = r.Random(self.seed)
 
-        if landing_zone_count is None:
+        try:
+            self._landing_zone_counts = tuple([int(c) for c in landing_zone_count])
+        except TypeError:
+            self._landing_zone_counts = int(landing_zone_count), # Trailing Comma: lustiges Format zur Definition eines Singleton-Tuples
+        except ValueError:
             self._landing_zone_counts = range(4,6)
-        else:
-            try:
-                self._landing_zone_counts = tuple([int(c) for c in landing_zone_count])
-            except TypeError:
-                self._landing_zone_counts = int(landing_zone_count), # Trailing Comma: lustiges Format zur Definition eines Singleton-Tuples
-            except ValueError:
-                self._landing_zone_counts = range(4,6)
         
         self.smoothing = 0
         self._make_plot(size, int(round(smoothing)))
@@ -32,28 +33,35 @@ class Terrain():
         self._make_height_map()
         
     def _make_plot(self, size, smoothing):
+        """
+        Es werden die o.g. Randhöhen der Chunks generiert.
+        Beim Generator wird nicht nur für 'size', sondern 'size+1' iteriert, da n Chunks insgesamt n+1 Ränder besitzen.
+        """
         self._plot = [self.gen.randint(self._lower, self._upper) for c in range(size+1)]
-        self.smooth_plot(smoothing)
+        # Glätte das generierte Terrain so oft wie gegeben
+        self.smooth_plot(smoothing) # glätte Plot wie verlangt
 
-    def print_plot(self):
-        for c in self._plot:
-            for z in range(c):
-                print("#", end="")
-            print("")
-        
     def smooth_plot(self, count, iter=True):
+        """
+        Jeder Punkt wird gleich dem Durchschnitt der Zelle selbst, der vorherigen und der nachherigen Zelle gesetzt.
+        Dadurch wird die Varianz verringert und das Terrain sieht immer flacher aus, je häufiger man das macht.
+        """
         for c in range(count):
-            self._plot = [(self._plot[c-1] + self._plot[c] + self._plot[c+1]) / 3 for c in range(len(self._plot) - 1)] \
+            self._plot = [ (self._plot[z-1] + self._plot[z] + self._plot[z+1]) / 3 for z in range(len(self._plot) - 1) ] \
                         + [(self._plot[-2] + self._plot[-1] + self._plot[0]) / 3]
-            if iter: self.smoothing += 1
+        if iter: self.smoothing += count
 
     def get_interpolated(self, chunksize):
+        """
+        Erstellt eine vollständige Liste der Terrainhöhe an jeder Stelle.
+        Ich verwende hierfür lineare Interpolation, d.h.
+        für jeden Chunk addiere ich bei jeder Stelle innerhalb des Chunks
+        zur Stelle x=0 *innerhalb* des Chunks die Differenz der Enden des Chunks
+        mal die jwlg. Stelle im Chunk.
+        """
         out = []
-        for c in range(len(self.height_map)-1):
+        for c in range(len(self.height_map)-1): # -1, da die Ränder enthalten sind und für n Chunks n+1 Ränder existieren
             out += [ (float(self.height_map[c]) + (float(self.height_map[c+1]) - float(self.height_map[c])) / chunksize * current_step) for current_step in range(chunksize) ]
-        
-        # Deckel drauf!
-        out += [self._plot[-1]]
 
         return out
     
@@ -68,10 +76,9 @@ class Terrain():
         grid_height = grid.getNbVertCells()
         background = grid.getBg()
         background.setLineWidth(1)
+        background.setPaintColor(GRAY)
 
-        zones_unpacked = []
-        for a,b in self.zones:
-            zones_unpacked += list(range(a,a+b))
+        zones_unpacked = self.get_unpacked_zones()
 
         dont_draw = False
         for c in range(5):
@@ -122,7 +129,7 @@ class Terrain():
         zipped_zones = zip(zone_positions, zone_lengths) # Listen zusammenfügen, um die Zonen nach Position zu sortieren
         zipped_zones.sort(key=lambda y: y[0])
 
-        zone_positions, zone_lengths = zip(*zipped_zones) # Listen zur Verarbeitung wieder auseinandernehmen (kein Bock auf die ganzen weiteren Indices)
+        zone_positions, zone_lengths = unzip(zipped_zones) # Listen zur Verarbeitung wieder auseinandernehmen (kein Bock auf die ganzen weiteren Indices)
         zone_positions, zone_lengths = list(zone_positions), list(zone_lengths) # explizit zu Listen machen (zip gibt Tupel zurück)
 
 
@@ -169,11 +176,19 @@ class Terrain():
             else:
                 self.height_map += [self._plot[i]]
                 i+=1
+    
+    def get_unpacked_zones(self):
+        zones_unpacked = []
+        for a,b in self.zones:
+            zones_unpacked += list(range(a,a+b))
+        return zones_unpacked
 
+    def __len__(self):
+        return len(self._plot)-1
     
 
 if __name__ == "__main__":
-    terra = Terrain(200, 0, 1200, smoothing=13, seed=2096571153)
+    terra = Terrain(200, 0, 1200, smoothing=16, seed=1)
     
     grid = gg.GameGrid(1600, 900, 1)
     terra.push_to_grid(grid, True)

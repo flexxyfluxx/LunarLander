@@ -1,8 +1,6 @@
-li = [0,1,2,3]
+nest_li = [[1,2],[3,4],[5,6],[7,8]]
 
-li2 = [] + li
+def unzip(zipped):
+    return zip(*zipped)
 
-li = ["a","b","c","d"]
-
-print(li)
-print(li2)
+print(unzip(nest_li))
