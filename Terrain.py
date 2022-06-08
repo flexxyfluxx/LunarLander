@@ -62,8 +62,8 @@ class Terrain():
         out = []
         for c in range(len(self.height_map)-1): # -1, da die Ränder enthalten sind und für n Chunks n+1 Ränder existieren
             out += [ (float(self.height_map[c]) + (float(self.height_map[c+1]) - float(self.height_map[c])) / chunksize * current_step) for current_step in range(chunksize) ]
-
         return out
+        
     
     def push_to_grid(self, grid, show_seed=True):
         terrain_length = len(self._plot)-1
@@ -78,8 +78,16 @@ class Terrain():
         background.setLineWidth(1)
         background.setPaintColor(GRAY)
 
-        zones_unpacked = self.get_unpacked_zones()
 
+        # male Fläche
+        background.setPaintColor(GRAY)
+        interpol = self.get_interpolated(int(ratio))
+        for c in range(len(interpol)):
+            background.drawLine(c, int(round(grid_height-interpol[c])+1), c, int(round(grid_height)))
+
+
+        # male Strich oben drauf
+        zones_unpacked = self.get_unpacked_zones()
         dont_draw = False
         for c in range(5):
             i=0
@@ -88,7 +96,7 @@ class Terrain():
                 if z in zones_unpacked:
                     height_1 = int(round(grid_height - self._plot[i-1]))+c+1
                     height_2 = int(round(grid_height - self._plot[i-1]))+c+1
-                    background.setPaintColor(WHITE)
+                    background.setPaintColor(LANDPAD_COLOR)
                     i -= 1
                     if c == 4:
                         dont_draw = True
@@ -97,9 +105,8 @@ class Terrain():
                     height_2 = int(round(grid_height - self._plot[i]))+c
 
                 if not dont_draw: background.drawLine(int(round((z-1) * ratio)), height_1, int(round(z * ratio)), height_2)
-                background.setPaintColor(GRAY)
+                background.setPaintColor(WHITE)
                 dont_draw = False
-        
         if show_seed:
             seed_display = gg.GGTextField(
                 grid,

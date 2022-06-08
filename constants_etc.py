@@ -61,8 +61,9 @@ WEST = 180
 NORTH = 270
 
 """ Farben: """
-GRAY = Color(153, 153, 153)
+GRAY = Color(85, 85, 85)
 WHITE = Color.WHITE
+LANDPAD_COLOR = Color.RED
 
 """ Keypress-Dict """
 KEY = {

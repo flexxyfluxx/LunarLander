@@ -121,15 +121,15 @@ class LunarGame(gg.GameGrid):
     def _is_lander_out_of_bounds(self):
         lander_x = self.lander.true_position.x
         lander_y = self.lander.true_position.y
-        return (lander_x + 5 < 0) \
-            or (lander_y + 5 < 0) \
-            or (lander_x - 5 > self.wndw_width) \
-            or (lander_y - 5 > self.wndw_height)
+        return (lander_x + 8 < 0) \
+            or (lander_y + 8 < 0) \
+            or (lander_x - 8 > self.wndw_width) \
+            or (lander_y - 8 > self.wndw_height)
     
     def _could_lander_land(self):
         # Ist der Lander theoretisch in der Lage zu landen, wenn er in dem Tick auf den Boden trifft?
-        return ((self.lander.true_position.get_int_x()+4)//self.terrain_chunksize) in self.landing_zones \
-            and ((self.lander.true_position.get_int_x()-5)//self.terrain_chunksize) in self.landing_zones \
+        return ((self.lander.true_position.get_int_x()+8)//self.terrain_chunksize) in self.landing_zones \
+            and ((self.lander.true_position.get_int_x()-8)//self.terrain_chunksize) in self.landing_zones \
             and abs(self.lander.x_velocity) <= 3 \
             and abs(self.lander.y_velocity) <= 10 \
             and self.lander.getDirection() in range(260, 281)
@@ -157,7 +157,7 @@ class LunarGame(gg.GameGrid):
         self.score += 50 * multiplier
         self.lander.fuel += 500 * multiplier
         self.hud.update()
-        self.delay(10000)
+        self.delay(2000)
 
     def _get_zone_multiplier(self, x):
         """

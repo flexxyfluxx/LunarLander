@@ -90,7 +90,7 @@ class LunarGameHUD(gg.Actor):
             self.score_field[1].setText(str(score))
             self.score_field[1].setLocation(gg.Location(self._third_left_align - self.score_field[1].getTextWidth(), 10))
             
-            self.time_field[1].setText(str(mins) + ":" + str(secs) if len(str(secs))==2 else ("0" + str(secs)))
+            self.time_field[1].setText(str(mins) + ":" + (str(secs) if len(str(secs))==2 else ("0" + str(secs))))
             self.time_field[1].setLocation(gg.Location(self._third_left_align - self.time_field[1].getTextWidth(), 30))
 
             self.fuel_field[1].setText(str(int(round(lander.fuel))))
