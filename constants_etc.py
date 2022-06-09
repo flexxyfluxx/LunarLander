@@ -33,8 +33,9 @@ class Cfg():
     
     def change(self, attr, val):
         try:
-            self.attr = float(val)
-        except AttributeError as err:
+            self.__dict__[attr]
+            self.__dict__[attr] = float(val)
+        except KeyError as err:
             print("[ERROR] "+repr(err)+" Attribute not found!")
         except ValueError as err:
             print("[ERROR] "+repr(err)+" Value must be a number!")
@@ -78,6 +79,7 @@ NORTH = 270
 GRAY = Color(85, 85, 85)
 WHITE = Color.WHITE
 LANDPAD_COLOR = Color.RED
+RED = Color.RED
 
 """ Keypress-Dict """
 KEY = {

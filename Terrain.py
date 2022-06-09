@@ -22,7 +22,7 @@ class Terrain():
         try:
             self._landing_zone_counts = tuple([int(c) for c in landing_zone_count])
         except TypeError:
-            self._landing_zone_counts = int(landing_zone_count), # Trailing Comma: lustiges Format zur Definition eines Singleton-Tuples
+            self._landing_zone_counts = int(landing_zone_count), # Trailing Comma: lustige Syntax zur Formatierung eines Singleton-Tuples
         except ValueError:
             self._landing_zone_counts = range(4,6)
         

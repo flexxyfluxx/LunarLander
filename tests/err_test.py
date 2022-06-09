@@ -1,23 +1,3 @@
-def \
-    fun\
-        (
-        )\
-            :
-    print\
-        (
-            "did thre theing!"
-        )
-    return\
-        132
-
-a \
-= \
-fun \
-(
-)
-print\
-    (
-        a\
-        *\
-        2
-    )
+from time import localtime, strftime
+now = strftime("%Y-%m-%d %H:%M:%S", localtime())
+print(now)

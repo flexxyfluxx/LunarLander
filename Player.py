@@ -22,7 +22,8 @@ class Player():
     def save(self):
         global _players
         _players.update({self.name: self})
-        p.dump(_players, open('players.pkl', 'wb'))
+        with open('players.pkl', 'wb') as f:
+            p.dump(_players, f)
 
     @classmethod
     def load(self, name):
@@ -34,3 +35,6 @@ try:
     _players = dict(p.load(open('players.pkl', 'rb')))
 except:
     _players = dict()
+
+if __name__ == "__main__":
+    print(_players)

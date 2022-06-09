@@ -5,26 +5,28 @@ class LunarGame:
 Hier wird das gesamte Spiel an sich verwaltet.
 """
 
+from EndScreen import EndScreen
 import ch.aplu.jgamegrid as gg
+from time import localtime, strftime
 from Terrain import *
 from Lander import *
 from constants_etc import *
 from LunarGameHUD import *
 from Player import *
+from EndScreen import *
 
 class LunarGame(gg.GameGrid):
-    def __init__(self, player_name, wndw_width=1280, wndw_height=960, terrain_chunksize=8):
+    def __init__(self, player, wndw_width=1280, wndw_height=960, terrain_chunksize=8):
+        self.start_time = localtime()
         self.wndw_width = wndw_width
         self.wndw_height = wndw_height
         self.score = 0
         self.time = 0
-        self._running = True
         gg.GameGrid.__init__(self, wndw_width, wndw_height, 1, None, True)
 
         self.terrain_chunksize = terrain_chunksize
 
-        #self.player = Player.load(player_name)
-        self.score = 0
+        self.player = Player.load(player)
         
         self.lander = Lander(
             self, # übergebe Selbst als grid_or_game
@@ -67,6 +69,7 @@ class LunarGame(gg.GameGrid):
         self.setTitle("Loonar Lander!1 wOOOOO YeaH babY thAtswhativebeenwaitingfor; thatswhatitsallabout! yeaaah!")
         self.addActor(self.lander, gg.Location(0, 50))
         self.terrain.push_to_grid(self)
+        self.hud.show()
 
     """
     Die Kollision von Lander und Terrain muss mathematisch überprüft werden, da es (afaik) keinen (einfacheren) Weg gibt,
@@ -76,6 +79,7 @@ class LunarGame(gg.GameGrid):
         self.time += 1
         try:
             if hasattr(self, 'out_of_bounds_timer'):
+                print("OOB: "+str(self.out_of_bounds_timer))
                 if not self._is_lander_out_of_bounds():
                     del self.out_of_bounds_timer
                     return
@@ -147,7 +151,7 @@ class LunarGame(gg.GameGrid):
             and abs(self.lander.x_velocity) <= 3 \
             and abs(self.lander.y_velocity) <= 10 \
             and self.lander.getDirection() in range(260, 281)
-        
+    
     def _check_lander_state(self):
         if hasattr(self.lander, 'crash_timer'): return
         if hasattr(self.lander, 'land_timer'): return
@@ -217,9 +221,16 @@ class LunarGame(gg.GameGrid):
         self.lander.set_velocity(40, 0)
     
     def do_end(self):
-        pass
-
-
-if __name__ == "__main__":
-    game = LunarGame("Jeffrey")
-    game.play()
+        self.hud.hide()
+        self.save()
+        self.player.add_score(self.score)
+        self.player.save()
+        EndScreen(self, self.score, self.player.name, True if self.score == self.player.high_score else False).show()
+    
+    def save(self):
+        now = strftime("%Y-%m-%d %H:%M:%S", self.start_time)
+        with open('history.txt', 'a+') as f:
+            f.write(
+                now+": ["+self.player.name+"] Achieved score of "+str(self.score)+" on seed "+str(self.terrain.seed)+" with smoothing "+str(self.terrain.smoothing)+"."
+                    + (" (New high score! :DDD)\n" if self.score > self.player.high_score else "\n")
+            )
