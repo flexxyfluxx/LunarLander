@@ -87,7 +87,7 @@ class Terrain():
 
 
         # male Strich oben drauf
-        zones_unpacked = self.get_unpacked_zones()
+        zones_unpacked = self.get_unpacked_zones(1)
         dont_draw = False
         for c in range(5):
             i=0
@@ -152,7 +152,7 @@ class Terrain():
             if zone_positions[c] - zone_positions[c-1] - zone_lengths[c-1] < 1: # Falls Abstand zom nächsten rechten Pad < 1: rechtes Pad korrigieren.
                 zone_positions[c] = zone_positions[c-1] + zone_lengths[c-1] + 1
 
-        self.zones = zip(zone_positions, zone_lengths) # 
+        self.zones = zip(zone_positions, zone_lengths) # wieder zippen und speichern
 
     
     def adjust(self, lower):
@@ -184,10 +184,10 @@ class Terrain():
                 self.height_map += [self._plot[i]]
                 i+=1
     
-    def get_unpacked_zones(self):
+    def get_unpacked_zones(self, chunksize):
         zones_unpacked = []
         for a,b in self.zones:
-            zones_unpacked += list(range(a,a+b))
+            zones_unpacked += list(range(a*chunksize, (a+b)*chunksize))
         return zones_unpacked
 
     def __len__(self):

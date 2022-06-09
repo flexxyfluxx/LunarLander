@@ -10,8 +10,8 @@ class Lander(gg.Actor):
 
         # geg. Sprite runterskalieren
         
-        scaled_sprites = gg.GGBitmap.getScaledImage(sprites, 0.125, 90) if isinstance(sprites, str)\
-                    else [gg.GGBitmap.getScaledImage(sprite, 0.125, 90) for sprite in sprites]
+        scaled_sprites = gg.GGBitmap.getScaledImage(sprites, 1, 90) if isinstance(sprites, str)\
+                    else [gg.GGBitmap.getScaledImage(sprite, 1, 90) for sprite in sprites]
         
         gg.Actor.__init__(self, True, scaled_sprites)
         self._gravity = gravity
@@ -178,11 +178,11 @@ class Lander(gg.Actor):
     
     def do_crash(self):
         self.set_velocity(0,0)
-        self.delay(250)
+        #self.delay(250)
         for c in range(6):
             self.show(c)
-            self.delay(250)
-        self.delay(250)
+            #self.delay(250)
+        #self.delay(250)
     
     def do_land(self):
         self.set_velocity(0,0)

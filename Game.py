@@ -23,12 +23,14 @@ class LunarGame(gg.GameGrid):
 
         self.terrain_chunksize = terrain_chunksize
 
-        self.player = Player.load(player_name)
+        #self.player = Player.load(player_name)
         self.score = 0
         
         self.lander = Lander(
-            self,
-            SPRITE['lander'],
+            self, # übergebe Selbst als grid_or_game
+            [ # Liste an Sprites
+                SPRITE['lander'], # Normal State
+            ],
             1.62,
             KEY['w'],
             KEY['s'],
@@ -42,7 +44,7 @@ class LunarGame(gg.GameGrid):
 
         self.terrain = Terrain(int(round(self.wndw_width / self.terrain_chunksize)), -100, 600, smoothing=13)
         self.terrain_interpol = self.terrain.get_interpolated(self.terrain_chunksize)
-        self.landing_zones = self.terrain.get_unpacked_zones()
+        self.landing_zones = self.terrain.get_unpacked_zones(self.terrain_chunksize)
         
 
         self.hud = LunarGameHUD(self)
@@ -62,15 +64,13 @@ class LunarGame(gg.GameGrid):
         if hasattr(self, 'out_of_bounds_timer'):
             if not self._is_lander_out_of_bounds():
                 del self.out_of_bounds_timer
-            elif self.out_of_bounds_timer > 1000:
+                return
+            if self.out_of_bounds_timer > 1000:
                 self.do_crash()
                 del self.out_of_bounds_timer
-            try:
-                self.out_of_bounds_timer += 1
-            except:
-                pass
-            finally:
                 return
+            self.out_of_bounds_timer += 1
+            return
 
         self._check_lander_state()
         
@@ -91,7 +91,7 @@ class LunarGame(gg.GameGrid):
     def refresh_terrain(self):
         self.terrain.next()
         self.terrain_interpol = self.terrain.get_interpolated(self.terrain_chunksize)
-        self.landing_zones = self.terrain.get_unpacked_zones()
+        self.landing_zones = self.terrain.get_unpacked_zones(self.terrain_chunksize)
     
     def _has_lander_collided(self):
         lander_x = self.lander.true_position.get_int_x() # Int, da als Array-Index verwendet
@@ -128,8 +128,8 @@ class LunarGame(gg.GameGrid):
     
     def _could_lander_land(self):
         # Ist der Lander theoretisch in der Lage zu landen, wenn er in dem Tick auf den Boden trifft?
-        return ((self.lander.true_position.get_int_x()+8)//self.terrain_chunksize) in self.landing_zones \
-            and ((self.lander.true_position.get_int_x()-8)//self.terrain_chunksize) in self.landing_zones \
+        return (self.lander.true_position.get_int_x()+8) in self.landing_zones \
+            and (self.lander.true_position.get_int_x()) in self.landing_zones \
             and abs(self.lander.x_velocity) <= 3 \
             and abs(self.lander.y_velocity) <= 10 \
             and self.lander.getDirection() in range(260, 281)
@@ -140,9 +140,13 @@ class LunarGame(gg.GameGrid):
             return
         
         if self._has_lander_collided():
+            print(self.landing_zones)
+            print(self.lander.true_position.get_int_x())
             if self._could_lander_land():
+                print("Landed")
                 self.do_land()
                 return
+            print("Crashed")
             self.do_crash()
 
     def do_crash(self):
@@ -153,11 +157,11 @@ class LunarGame(gg.GameGrid):
     def do_land(self):
         self.doPause()
         self.lander.do_land()
-        multiplier = self._get_zone_multiplier(self.lander.true_position.x // self.terrain_chunksize)
+        multiplier = self._get_zone_multiplier(self.lander.true_position.get_int_x())
         self.score += 50 * multiplier
         self.lander.fuel += 500 * multiplier
         self.hud.update()
-        self.delay(2000)
+        #self.delay(2000)
 
     def _get_zone_multiplier(self, x):
         """
@@ -176,9 +180,9 @@ class LunarGame(gg.GameGrid):
         terr_positions, terr_lengths = unzip(self.terrain.zones)
 
         # Finde das linke Ende der Zone, da in terrain.zones die linken Ränder der Landezonen gespeichert sind
+        x //= self.terrain_chunksize
         while x not in terr_positions:
             x -= 1
-        
         # Finde den entsprechenden Index (geht, da die selbe Position nicht mehrmals vorkommen kann)
         index = getindex(x, terr_positions)
         local_length = terr_lengths[index]
@@ -187,5 +191,5 @@ class LunarGame(gg.GameGrid):
 
 
 if __name__ == "__main__":
-    game = LunarGame(1000)
+    game = LunarGame("Jeffrey")
     game.play()
