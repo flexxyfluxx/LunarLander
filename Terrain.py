@@ -32,14 +32,14 @@ class Terrain():
         self.adjust(64)
         self._make_height_map()
         
-    def _make_plot(self, size, smoothing):
+    def _make_plot(self, size, smoothing, iter=True):
         """
         Es werden die o.g. Randhöhen der Chunks generiert.
         Beim Generator wird nicht nur für 'size', sondern 'size+1' iteriert, da n Chunks insgesamt n+1 Ränder besitzen.
         """
         self._plot = [self.gen.randint(self._lower, self._upper) for c in range(size+1)]
         # Glätte das generierte Terrain so oft wie gegeben
-        self.smooth_plot(smoothing) # glätte Plot wie verlangt
+        self.smooth_plot(smoothing, iter) # glätte Plot wie verlangt
 
     def smooth_plot(self, count, iter=True):
         """
@@ -166,8 +166,8 @@ class Terrain():
     def next(self):
         self._make_plot(self.size, self.smoothing, iter=False)
         self._add_landing_zones(self.gen.randint(4,6))
-        self._make_height_map()
         self.adjust(64)
+        self._make_height_map()
     
     def _make_height_map(self):
         zones_unpacked = []

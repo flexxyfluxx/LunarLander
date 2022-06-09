@@ -41,6 +41,8 @@ class Lander(gg.Actor):
         self._key_kill_thrust = key_kill_thrust
         self._key_max_thrust = key_max_thrust
 
+        self._thrust_flickerer = 0
+
 
     def set_velocity(self, x_vel=0, y_vel=0):
         self.x_velocity = x_vel
@@ -55,6 +57,31 @@ class Lander(gg.Actor):
         """
 
         if not self.isVisible(): return
+
+        if hasattr(self, 'crash_timer'):
+            if self.crash_timer >= 110:
+                self.hide()
+                delattr(self, 'crash_timer')
+                self.delay(1000)
+                self.grid_or_game.next_map()
+                return
+            self.show(self.crash_timer // 10)
+            self.crash_timer += 1
+            return
+        
+        if hasattr(self, 'land_timer'):
+            if self.land_timer > 50:
+                if self.land_timer > 100:
+                    delattr(self, 'land_timer')
+                    self.delay(1000)
+                    self.grid_or_game.next_map()
+                    return
+                self.show(0)
+                self.land_timer += 1
+                return
+            self.show(15)
+            self.land_timer += 1
+            return
 
         if self.fuel <= 0:
             if self._last_rotation == LAST_RIGHT: self.turn(2)
@@ -131,6 +158,19 @@ class Lander(gg.Actor):
             self._rotate_momentum = None
         # end of rotation
         
+        if self.thrust > 0:
+            if self.thrust < config.THRUST_SCALE:
+                self.show(11 if self._thrust_flickerer < 5 else 12)
+            else:
+                self.show(13 if self._thrust_flickerer < 5 else 14)
+        
+        if self.thrust == 0:
+            self.show(0)
+        
+        self._thrust_flickerer += 1
+        if self._thrust_flickerer > 10:
+            self._thrust_flickerer = 0
+
         self.print_stats()
         
 
@@ -176,24 +216,19 @@ class Lander(gg.Actor):
         self.fuel -= spent_fuel
         if self.fuel < 0: self.fuel = 0
     
-    def do_crash(self):
+    def start_crash(self):
         self.set_velocity(0,0)
-        #self.delay(250)
-        for c in range(6):
-            self.show(c)
-            #self.delay(250)
-        #self.delay(250)
+        self.thrust = 0
+        self.crash_timer = 0
     
-    def do_land(self):
+    def start_land(self):
         self.set_velocity(0,0)
+        self.thrust = 0
+        self.land_timer = 0
     
     def setLocation(self, location):
         self.true_position.x, self.true_position.y = location.x, location.y
         gg.Actor.setLocation(self, location)
-    
-    def stop_crash(self, sprite_id=0):
-        gg.Actor.show(self, sprite_id)
-        if hasattr(self, 'crash_timer'): del self.crash_timer
     
     def print_stats(self):
         print(str(self.thrust) +  " | " + str(self.getDirection()) \

@@ -29,16 +29,30 @@ class LunarGame(gg.GameGrid):
         self.lander = Lander(
             self, # übergebe Selbst als grid_or_game
             [ # Liste an Sprites
-                SPRITE['lander'], # Normal State
+                SPRITE['lander'], # Zero Thrust;
+                SPRITE['lander_exp01'], # Explosion Sprites
+                SPRITE['lander_exp02'],
+                SPRITE['lander_exp03'],
+                SPRITE['lander_exp04'],
+                SPRITE['lander_exp05'],
+                SPRITE['lander_exp06'],
+                SPRITE['lander_exp07'],
+                SPRITE['lander_exp08'],
+                SPRITE['lander_exp09'],
+                SPRITE['lander_exp10'],
+                SPRITE['lander_lthr1'], # Low Thrust Animation
+                SPRITE['lander_lthr2'],
+                SPRITE['lander_hthr1'], # High Thrust Animation
+                SPRITE['lander_hthr2']
             ],
-            1.62,
-            KEY['w'],
-            KEY['s'],
-            KEY['a'],
-            KEY['d'],
-            KEY['q'],
-            KEY['e'],
-            gg.Location(0,20)
+            1.62, # Gravitationskonstante
+            KEY['w'], # Thrust ↑
+            KEY['s'], # Thrust ↓
+            KEY['a'], # Rotate ↺
+            KEY['d'], # Rotate ↻
+            KEY['q'], # Thrust → 0
+            KEY['e'], # Thrust → max
+            gg.Location(0,20) # Startpos.
         )
         self.lander.set_velocity(40, 0)
 
@@ -60,21 +74,21 @@ class LunarGame(gg.GameGrid):
     """
     def act(self):
         self.time += 1
-
-        if hasattr(self, 'out_of_bounds_timer'):
-            if not self._is_lander_out_of_bounds():
-                del self.out_of_bounds_timer
+        try:
+            if hasattr(self, 'out_of_bounds_timer'):
+                if not self._is_lander_out_of_bounds():
+                    del self.out_of_bounds_timer
+                    return
+                if self.out_of_bounds_timer > 1000:
+                    self.do_crash()
+                    del self.out_of_bounds_timer
+                    return
+                self.out_of_bounds_timer += 1
                 return
-            if self.out_of_bounds_timer > 1000:
-                self.do_crash()
-                del self.out_of_bounds_timer
-                return
-            self.out_of_bounds_timer += 1
-            return
-
-        self._check_lander_state()
-        
-        self.hud.update()
+            
+            self._check_lander_state()
+        finally:
+            self.hud.update()
     
     def play(self):
         self.show()
@@ -83,7 +97,7 @@ class LunarGame(gg.GameGrid):
     
     def do_reset(self):
         self.terrain.next()
-        self.lander.setLocation(gg.Location(0, 20))
+        self.lander.setLocation(gg.Location(10, 64))
     
     def get_secs(self):
         return self.time // 100
@@ -135,6 +149,8 @@ class LunarGame(gg.GameGrid):
             and self.lander.getDirection() in range(260, 281)
         
     def _check_lander_state(self):
+        if hasattr(self.lander, 'crash_timer'): return
+        if hasattr(self.lander, 'land_timer'): return
         if self._is_lander_out_of_bounds():
             self.out_of_bounds_timer = 0
             return
@@ -150,18 +166,15 @@ class LunarGame(gg.GameGrid):
             self.do_crash()
 
     def do_crash(self):
-        self.doPause()
-        self.lander.do_crash()
+        self.lander.start_crash()
         self.score += 15
     
     def do_land(self):
-        self.doPause()
-        self.lander.do_land()
+        self.lander.start_land()
         multiplier = self._get_zone_multiplier(self.lander.true_position.get_int_x())
         self.score += 50 * multiplier
         self.lander.fuel += 500 * multiplier
         self.hud.update()
-        #self.delay(2000)
 
     def _get_zone_multiplier(self, x):
         """
@@ -188,6 +201,23 @@ class LunarGame(gg.GameGrid):
         local_length = terr_lengths[index]
 
         return (8 - local_length) if local_length < 8 else 1
+    
+    def next_map(self):
+        if self.lander.fuel == 0:
+            self.do_end()
+            return
+        self.terrain.next()
+        self.terrain_interpol = self.terrain.get_interpolated(self.terrain_chunksize)
+        self.landing_zones = self.terrain.get_unpacked_zones(self.terrain_chunksize)
+        self.getBg().clear()
+        self.terrain.push_to_grid(self)
+        self.lander.show()
+        self.lander.setDirection(0)
+        self.lander.setLocation(gg.Location(10, 64))
+        self.lander.set_velocity(40, 0)
+    
+    def do_end(self):
+        pass
 
 
 if __name__ == "__main__":

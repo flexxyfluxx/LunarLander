@@ -51,7 +51,21 @@ config = Cfg()
 # ----- KONSTANTEN -----
 """ Dict mit den Paths zu den relevanten Bildern: """
 SPRITE = {
-    'lander': abspath("./sprites/lander.png")
+    'lander': abspath("./sprites/lander_default.png"),
+    'lander_exp01': abspath("./sprites/lander_explode01.png"),
+    'lander_exp02': abspath("./sprites/lander_explode02.png"),
+    'lander_exp03': abspath("./sprites/lander_explode03.png"),
+    'lander_exp04': abspath("./sprites/lander_explode04.png"),
+    'lander_exp05': abspath("./sprites/lander_explode05.png"),
+    'lander_exp06': abspath("./sprites/lander_explode06.png"),
+    'lander_exp07': abspath("./sprites/lander_explode07.png"),
+    'lander_exp08': abspath("./sprites/lander_explode08.png"),
+    'lander_exp09': abspath("./sprites/lander_explode09.png"),
+    'lander_exp10': abspath("./sprites/lander_explode10.png"),
+    'lander_lthr1': abspath("./sprites/lander_low_thrust1.png"),
+    'lander_lthr2': abspath("./sprites/lander_low_thrust2.png"),
+    'lander_hthr1': abspath("./sprites/lander_high_thrust1.png"),
+    'lander_hthr2': abspath("./sprites/lander_high_thrust2.png"),
 }
 
 """ Richtungskonstanten: """
