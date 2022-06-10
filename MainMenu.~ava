@@ -80,7 +80,7 @@ public class MainMenu extends JFrame {
     cp.add(jlb_name);
     
     setVisible(true);
-    jbtn_save_settings.setText("jbtn_save_settings");
+    jbtn_save_settings.setText("Save");
     jbtn_save_settings.setMargin(new Insets(2, 2, 2, 2));
     jbtn_save_settings.addActionListener(new ActionListener() { 
       public void actionPerformed(ActionEvent evt) { 
