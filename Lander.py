@@ -56,12 +56,13 @@ class Lander(gg.Actor):
         if not self.isVisible(): return
 
         if hasattr(self, 'crash_timer'):
-            if self.crash_timer >= 110:
+            if self.crash_timer >= 100:
                 self.hide()
-                delattr(self, 'crash_timer')
-                self.delay(1000)
-                self.grid_or_game.next_map()
-                return
+                if self.crash_timer >= 110:
+                    delattr(self, 'crash_timer')
+                    self.delay(1000)
+                    self.grid_or_game.next_map()
+                    return
             self.show(self.crash_timer // 10)
             self.crash_timer += 1
             return
@@ -81,6 +82,7 @@ class Lander(gg.Actor):
             return
 
         if self.fuel <= 0:
+            self.show(0)
             if self._last_rotation == LAST_RIGHT: self.turn(2)
             elif self._last_rotation == LAST_LEFT: self.turn(-2)
             self._apply_gravity()
