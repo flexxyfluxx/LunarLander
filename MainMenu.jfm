@@ -1,10 +1,10 @@
 object MainMenu1: TFGUIForm
-  Left = 968
+  Left = 970
   Top = 208
   BorderIcons = [biSystemMenu]
   Caption = 'MainMenu'
   ClientHeight = 383
-  ClientWidth = 304
+  ClientWidth = 302
   Color = clBtnFace
   ParentFont = True
   FormStyle = fsStayOnTop
@@ -17,7 +17,7 @@ object MainMenu1: TFGUIForm
   OnMouseActivate = FormMouseActivate
   OnResize = FormResize
   FrameType = 5
-  Modified = False
+  Modified = True
   Resizable = False
   Undecorated = False
   Background = clBtnFace
