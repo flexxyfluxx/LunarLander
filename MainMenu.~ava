@@ -31,7 +31,7 @@ public class MainMenu extends JFrame {
     // Frame-Init
     super();
     setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-    int frameWidth = 320; 
+    int frameWidth = 318; 
     int frameHeight = 422;
     setSize(frameWidth, frameHeight);
     Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
