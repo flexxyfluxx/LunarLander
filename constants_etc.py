@@ -30,15 +30,26 @@ class Cfg():
         self.FUEL_CONSUMPTION = self._parser.getfloat('Lander', 'MaxFuelConsumption')
         self.THRUST_SCALE = self._parser.getint('Lander', 'ThrustScale')
         self.FUEL_VELOCITY = self._parser.getint('Lander', 'FuelVelocity')
+        self.WNDW_WIDTH = self._parser.getint('Setup', 'WndwWidth')
+        self.WNDW_HEIGHT = self._parser.getint('Setup', 'WndwHeight')
     
-    def change(self, attr, val):
+    def write_wndw_height(self, new):
         try:
-            self.__dict__[attr]
-            self.__dict__[attr] = float(val)
-        except KeyError as err:
-            print("[ERROR] "+repr(err)+" Attribute not found!")
-        except ValueError as err:
-            print("[ERROR] "+repr(err)+" Value must be a number!")
+            new = int(new)
+        except ValueError:
+            print("[ERROR] Given window height not coercible to Int!")
+        else:
+            self.WNDW_WIDTH = new
+            self._parser.set('Setup', 'WndwHeight', new)
+        
+    def write_wndw_width(self, new):
+        try:
+            new = int(new)
+        except ValueError:
+            print("[ERROR] Given window width not coercible to Int!")
+        else:
+            self.WNDW_WIDTH = new
+            self._parser.set('Setup', 'WndwWidth', new)
     
     def commit_to_ini(self):
         with open('settings.ini', 'w') as file:

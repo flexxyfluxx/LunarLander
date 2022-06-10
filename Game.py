@@ -16,7 +16,7 @@ from Player import *
 from EndScreen import *
 
 class LunarGame(gg.GameGrid):
-    def __init__(self, player, wndw_width=1280, wndw_height=960, terrain_chunksize=8):
+    def __init__(self, player, wndw_width=1280, wndw_height=960, terrain_chunksize=8, seed=None):
         self.start_time = localtime()
         self.wndw_width = wndw_width
         self.wndw_height = wndw_height
@@ -58,7 +58,10 @@ class LunarGame(gg.GameGrid):
         )
         self.lander.set_velocity(40, 0)
 
-        self.terrain = Terrain(int(round(self.wndw_width / self.terrain_chunksize)), -100, 600, smoothing=13)
+        if seed is None:
+            self.terrain = Terrain(int(round(self.wndw_width / self.terrain_chunksize)), -100, 600, smoothing=13)
+        else:
+            self.terrain = Terrain(int(round(self.wndw_width / self.terrain_chunksize)), -100, 600, smoothing=13, seed=seed)
         self.terrain_interpol = self.terrain.get_interpolated(self.terrain_chunksize)
         self.landing_zones = self.terrain.get_unpacked_zones(self.terrain_chunksize)
         
