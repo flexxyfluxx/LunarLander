@@ -1,0 +1,11 @@
+2022-06-14 21:14:57: [std::player] Achieved score of 1245 on seed 1856244240 with smoothing 13. (New high score! :DDD)
+2022-06-14 21:35:51: [java.util.Player] Achieved score of 995 on seed 1146247393 with smoothing 13. (New high score! :DDD)
+2022-06-14 21:35:51: [java.util.Player] Achieved score of 1010 on seed 1146247393 with smoothing 13. (New high score! :DDD)
+2022-06-14 21:35:51: [java.util.Player] Achieved score of 1025 on seed 1146247393 with smoothing 13. (New high score! :DDD)
+2022-06-14 21:35:51: [java.util.Player] Achieved score of 1040 on seed 1146247393 with smoothing 13. (New high score! :DDD)
+2022-06-14 21:35:51: [java.util.Player] Achieved score of 1055 on seed 1146247393 with smoothing 13. (New high score! :DDD)
+2022-06-14 21:35:51: [java.util.Player] Achieved score of 1070 on seed 1146247393 with smoothing 13. (New high score! :DDD)
+2022-06-14 21:35:51: [java.util.Player] Achieved score of 1085 on seed 1146247393 with smoothing 13. (New high score! :DDD)
+2022-06-14 21:35:51: [java.util.Player] Achieved score of 1100 on seed 1146247393 with smoothing 13. (New high score! :DDD)
+2022-06-14 21:54:20: [std::player] Achieved score of 15 on seed 1463307528 with smoothing 13.
+2022-06-14 22:17:27: [Seesen von Saasenschmirtz] Achieved score of 15 on seed 1775758008 with smoothing 13. (New high score! :DDD)

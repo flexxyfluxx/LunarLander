@@ -52,20 +52,20 @@ class Lander(gg.Actor):
         Dann werden mit momentanem Schub und Drehung die x-/y-Geschwindigkeiten verändert.
         Schließlich bewegt sich der Lander entsprechend der Vektorgeschwindigkeiten.
         """
-
-        if not self.isVisible(): return
-
-        if hasattr(self, 'crash_timer'):
+        if hasattr(self, 'crash_timer'): # CHANGE
+            self.crash_timer += 1
             if self.crash_timer >= 100:
                 self.hide()
                 if self.crash_timer >= 110:
                     delattr(self, 'crash_timer')
                     self.delay(1000)
                     self.grid_or_game.next_map()
-                    return
-            self.show(self.crash_timer // 10)
-            self.crash_timer += 1
+            else:
+                self.show(self.crash_timer // 10)
             return
+
+        if not self.isVisible(): return
+
         
         if hasattr(self, 'land_timer'):
             if self.land_timer > 50:
@@ -169,8 +169,6 @@ class Lander(gg.Actor):
         self._thrust_flickerer += 1
         if self._thrust_flickerer > 10:
             self._thrust_flickerer = 0
-
-        self.print_stats()
         
 
         self._apply_gravity()
@@ -199,8 +197,6 @@ class Lander(gg.Actor):
 
 
         accel = -config.FUEL_VELOCITY * log(1-(spent_fuel / mass))
-        print(accel)
-
         angle = self.getDirection()
         
         self.x_velocity += (accel * cos(radians(angle)))

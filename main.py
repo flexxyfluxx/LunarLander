@@ -44,8 +44,8 @@ def bind_onclicks(menu):
     menu.jbtn_save_settings.actionPerformed = lambda event: onclick_save_settings(event, menu)
     menu.jbtn_play.actionPerformed = lambda event: onclick_play(event, menu)
 
-def play_game(playername, seed):
-    game = LunarGame(playername, config.WNDW_WIDTH, config.WNDW_HEIGHT)
+def play_game(playername, seed=None): # CHANGE
+    game = LunarGame(playername, config.WNDW_WIDTH, config.WNDW_HEIGHT, seed=seed)
     game.play()
 
 

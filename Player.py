@@ -4,6 +4,10 @@ import pickle as p
 
 
 class Player():
+    try: # CHANGE
+        players = dict(p.load(open('players.pkl', 'rb+'))) # CHANGE
+    except:
+        players = dict()
     def __init__(self, name, scores=[]):
         self.name = str(name)
         self.scores = []
@@ -20,21 +24,16 @@ class Player():
         if score > self.high_score: self.high_score = score
     
     def save(self):
-        global _players
-        _players.update({self.name: self})
+        Player.players.update({self.name: self})
         with open('players.pkl', 'wb') as f:
-            p.dump(_players, f)
+            p.dump(Player.players, f)
 
     @classmethod
     def load(self, name):
         name = str(name)
-        return _players[name] if name in _players.keys() \
+        return Player.players[name] if name in Player.players.keys() \
             else Player(name)
 
-try:
-    _players = dict(p.load(open('players.pkl', 'rb')))
-except:
-    _players = dict()
 
 if __name__ == "__main__":
-    print(_players)
+    print(Player.players)

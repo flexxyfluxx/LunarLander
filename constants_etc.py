@@ -32,6 +32,7 @@ class Cfg():
         self.FUEL_VELOCITY = self._parser.getint('Lander', 'FuelVelocity')
         self.WNDW_WIDTH = self._parser.getint('Setup', 'WndwWidth')
         self.WNDW_HEIGHT = self._parser.getint('Setup', 'WndwHeight')
+        self.SMOOTHING = self._parser.getint('Setup', 'Smoothing') # CHANGE
     
     def write_wndw_height(self, new):
         try:

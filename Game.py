@@ -59,9 +59,9 @@ class LunarGame(gg.GameGrid):
         self.lander.set_velocity(40, 0)
 
         if seed is None:
-            self.terrain = Terrain(int(round(self.wndw_width / self.terrain_chunksize)), -100, 600, smoothing=13)
+            self.terrain = Terrain(int(round(self.wndw_width / self.terrain_chunksize)), -100, 600, smoothing=config.SMOOTHING) # CHANGE
         else:
-            self.terrain = Terrain(int(round(self.wndw_width / self.terrain_chunksize)), -100, 600, smoothing=13, seed=seed)
+            self.terrain = Terrain(int(round(self.wndw_width / self.terrain_chunksize)), -100, 600, smoothing=config.SMOOTHING, seed=seed) # CHANGE
         self.terrain_interpol = self.terrain.get_interpolated(self.terrain_chunksize)
         self.landing_zones = self.terrain.get_unpacked_zones(self.terrain_chunksize)
         
@@ -82,7 +82,6 @@ class LunarGame(gg.GameGrid):
         self.time += 1
         try:
             if hasattr(self, 'out_of_bounds_timer'):
-                print("OOB: "+str(self.out_of_bounds_timer))
                 if not self._is_lander_out_of_bounds():
                     del self.out_of_bounds_timer
                     return
@@ -163,18 +162,15 @@ class LunarGame(gg.GameGrid):
             return
         
         if self._has_lander_collided():
-            print(self.landing_zones)
-            print(self.lander.true_position.get_int_x())
             if self._could_lander_land():
-                print("Landed")
                 self.do_land()
                 return
-            print("Crashed")
             self.do_crash()
 
     def do_crash(self):
-        self.lander.start_crash()
-        self.score += 15
+        if self.lander.isVisible(): # CHANGE
+            self.lander.start_crash()
+            self.score += 15
     
     def do_land(self):
         self.lander.start_land()
@@ -229,11 +225,12 @@ class LunarGame(gg.GameGrid):
         self.player.add_score(self.score)
         self.player.save()
         EndScreen(self, self.score, self.player.name, True if self.score == self.player.high_score else False).show()
+        self.doPause()
     
     def save(self):
-        now = strftime("%Y-%m-%d %H:%M:%S", self.start_time)
+        time = strftime("%Y-%m-%d %H:%M:%S", self.start_time)
         with open('history.txt', 'a+') as f:
             f.write(
-                now+": ["+self.player.name+"] Achieved score of "+str(self.score)+" on seed "+str(self.terrain.seed)+" with smoothing "+str(self.terrain.smoothing)+"."
+                time+": ["+self.player.name+"] Achieved score of "+str(self.score)+" on seed "+str(self.terrain.seed)+" with smoothing "+str(self.terrain.smoothing)+"."
                     + (" (New high score! :DDD)\n" if self.score > self.player.high_score else "\n")
             )

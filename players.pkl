@@ -1,0 +1,18 @@
+(dp0
+S'Seesen von Saasenschmirtz'
+p1
+(iPlayer
+Player
+p2
+(dp3
+S'name'
+p4
+g1
+sS'scores'
+p5
+(lp6
+I15
+asS'high_score'
+p7
+I15
+sbs.
