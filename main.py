@@ -5,8 +5,11 @@ from Game import *
 from Terrain import *
 from Lander import *
 from Player import *
+from GameResults import *
 from constants_etc import *
 import MainMenu
+import Leaderboard
+from math import log10
 
 
 def setup_menu(menu):
@@ -16,7 +19,7 @@ def setup_menu(menu):
 def update_hof(hof):
     playerlist = get_players().values()
     top_players = sorted(
-        playerlist, key=lambda player: player.high_score.score, reverse=True
+        playerlist, key=lambda y: y.high_score, reverse=True
     )[:(100 if len(playerlist) > 100 else len(playerlist))]
 
     scoretxt = ["", ""]
@@ -43,7 +46,7 @@ def update_hof(hof):
         c+=1
 
     gamelist = get_games()
-    top_games = sorted(gamelist, key=lambda game: game.score, reverse=True)[:(100 if len(gamelist) > 100 else len(gamelist))]
+    top_games = sorted(gamelist, reverse=True)[:(100 if len(gamelist) > 100 else len(gamelist))]
 
     c=0
     for game in top_games:
@@ -72,12 +75,14 @@ def update_hof(hof):
 
 def onclick_play(event, menu):
     playername = str(menu.jtf_name.getText())
+    if len(playername) not in range(1,25):
+        return
+
     seed = menu.jtf_seed.getText()
     if seed == "":
         seed = None
     else:
         seed = int(seed)
-    menu.dispose()
     play_game(playername, seed)
 
 def onclick_save_settings(event, menu):
@@ -93,19 +98,32 @@ def onclick_save_settings(event, menu):
     except:
         pass
     finally:
-        menu.jtf_wndw_height.setText(str(config.WNDW_WIDTH))
+        menu.jtf_wndw_width.setText(str(config.WNDW_WIDTH))
+    
+    config.commit_to_ini()
+    
+def onclick_hof(event, hof):
+    if hof.isVisible(): hof.setVisible(False) 
+    else:
+        hof.setVisible(True)
+        update_hof(hof)
 
 
-def bind_onclicks(menu):
+def bind_onclicks(menu, hof):
     menu.jbtn_save_settings.actionPerformed = lambda event: onclick_save_settings(event, menu)
     menu.jbtn_play.actionPerformed = lambda event: onclick_play(event, menu)
+    menu.jbtn_hof.actionPerformed = lambda event: onclick_hof(event, hof)
 
 def play_game(playername, seed=None): # CHANGE
     game = LunarGame(playername, config.WNDW_WIDTH, config.WNDW_HEIGHT, seed=seed)
     game.play()
 
+def main():
+    menu = MainMenu()
+    hof = Leaderboard()
+    setup_menu(menu)
+    bind_onclicks(menu, hof)
+
 
 if __name__ == "__main__":
-    menu = MainMenu()
-    setup_menu(menu)
-    bind_onclicks(menu)
+    main()

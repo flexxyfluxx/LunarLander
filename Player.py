@@ -9,20 +9,21 @@ class Player():
         players = dict(p.load(open('players.pkl', 'rb+'))) # CHANGE
     except:
         players = dict()
-    def __init__(self, name, scores=[]):
+    def __init__(self, name, games=[]):
         self.name = str(name)
-        self.scores = []
-        for score in scores:
+        self.games = []
+        for game in games:
             try:
-                self.add_score(score)
+                self.add_game(game)
             except:
                 pass
-        self.high_score = max(self.scores) if len(self.scores) > 0 \
-                        else 0
+        self.high_score = max(self.games, key=lambda game: game.score) if len(self.games) > 0 \
+                        else None
     
-    def add_score(self, score):
-        self.scores += [int(score)]
-        if score > self.high_score: self.high_score = score
+    def add_game(self, game):
+        self.games += [game]
+        if self.high_score is None: self.high_score = game
+        elif game.score > self.high_score.score: self.high_score = game
     
     def save(self):
         players = get_players()

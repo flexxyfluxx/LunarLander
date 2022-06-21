@@ -14,6 +14,7 @@ from constants_etc import *
 from LunarGameHUD import *
 from Player import *
 from EndScreen import *
+from GameResults import *
 
 class LunarGame(gg.GameGrid):
     def __init__(self, player, wndw_width=1280, wndw_height=960, terrain_chunksize=8, seed=None):
@@ -221,15 +222,17 @@ class LunarGame(gg.GameGrid):
     
     def do_end(self):
         self.hud.hide()
-        self.save()
-        self.player.add_score(self.score)
+        game = GameResult(self.player.name, self.score, self.terrain.seed, self.terrain.smoothing, self.start_time)
+        self.save(game)
+        self.player.add_game(game)
         self.player.save()
-        EndScreen(self, self.score, self.player.name, True if self.score == self.player.high_score else False).show()
+        EndScreen(self, self.score, self.player.name, True if self.score == self.player.high_score.score else False).show()
         self.doPause()
-        
-    def save(self):
+
+    def save(self, game):
         time = strftime("%Y-%m-%d %H:%M:%S", self.start_time)
         with open('history.txt', 'a+') as f:f.write(
                 time+": ["+self.player.name+"] Achieved score of "+str(self.score)+" on seed "+str(self.terrain.seed)+" with smoothing "+str(self.terrain.smoothing)+"."
                     + (" (New high score! :DDD)\n" if self.score > self.player.high_score else "\n")
             )
+        game.save()

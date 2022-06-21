@@ -1,1 +1,9 @@
 
+2022-06-22 00:05:33: [std::player] Achieved score of 1380 on seed 1 with smoothing 13. (New high score! :DDD)
+2022-06-22 00:16:13: [std::player] Achieved score of 30 on seed 636135111 with smoothing 13. (New high score! :DDD)
+2022-06-22 00:18:04: [std::player] Achieved score of 15 on seed 1968130783 with smoothing 13. (New high score! :DDD)
+2022-06-22 00:21:12: [std::player] Achieved score of 30 on seed -545615104 with smoothing 13. (New high score! :DDD)
+2022-06-22 00:25:47: [std::player] Achieved score of 15 on seed 1538813286 with smoothing 13. (New high score! :DDD)
+2022-06-22 00:27:06: [std::player] Achieved score of 280 on seed 812874608 with smoothing 13.
+2022-06-22 00:31:54: [std::player] Achieved score of 15 on seed 1223689612 with smoothing 13.
+2022-06-22 00:32:28: [java.util.Player] Achieved score of 15 on seed -1833476988 with smoothing 13. (New high score! :DDD)
