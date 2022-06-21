@@ -7,8 +7,13 @@ und Konstanten zugewiesen.
 """
 
 """ Imports: """
+<<<<<<< Updated upstream
 from os.path import abspath # oh nyo the namespace OwO~ onwy impowt whats neccessawy~~ rawr :3
 import ConfigParser as cp
+=======
+from os.path import abspath, exists # oh nyo the namespace OwO~ onwy impowt whats neccessawy~~ rawr :3
+import ConfigParser as cp # o_o realization
+>>>>>>> Stashed changes
 from java.awt import Color
 
 # ----- SETTINGS VON INI LADEN -----
@@ -33,6 +38,9 @@ class Cfg():
         self.WNDW_WIDTH = self._parser.getint('Setup', 'WndwWidth')
         self.WNDW_HEIGHT = self._parser.getint('Setup', 'WndwHeight')
         self.SMOOTHING = self._parser.getint('Setup', 'Smoothing') # CHANGE
+        self.SAVEDIR = abspath(str(self._parser.get('System', 'SaveDir')))
+        if not exists(self.SAVEDIR):
+            self.SAVEDIR = abspath(".")
     
     def write_wndw_height(self, new):
         try:
@@ -55,6 +63,7 @@ class Cfg():
     def commit_to_ini(self):
         with open('settings.ini', 'w') as file:
             self._parser.write(file)
+    
 
 
 config = Cfg()

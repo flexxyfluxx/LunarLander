@@ -13,6 +13,65 @@ def setup_menu(menu):
     menu.jtf_wndw_height.setText(str(config.WNDW_HEIGHT))
     menu.jtf_wndw_width.setText(str(config.WNDW_WIDTH))
 
+<<<<<<< Updated upstream
+=======
+def update_hof(hof):
+    playerlist = get_players().values()
+    top_players = sorted(
+        playerlist, key=lambda player: player.high_score.score, reverse=True
+    )[:(100 if len(playerlist) > 100 else len(playerlist))]
+
+    scoretxt = ["", ""]
+    c=0
+    for player in top_players:
+        if c > 99:
+            break
+        """
+        scoretxt[0] += "%d: %s%s%d\nSeed/Smooth: %d / %d\n\n" % (
+                    c+1,
+                    player.name,
+                    "." * (33 - len(player.name) - int(log10(player.high_score.score))),
+                    player.high_score.score,
+                    player.high_score.seed,
+                    player.high_score.smoothing
+                )
+        """
+        scoretxt[0] += str(c+1) + ": " + player.name \
+                    + "."*(33 - len(player.name) - int(log10(player.high_score.score))) \
+                    + str(player.high_score.score) \
+                    + "\nSeed/Smooth: " + str(player.high_score.seed) + " / " \
+                    + str(player.high_score.smoothing) + "\n\n"
+        #"""
+        c+=1
+
+    gamelist = get_games()
+    top_games = sorted(gamelist, key=lambda game: game.score, reverse=True)[:(100 if len(gamelist) > 100 else len(gamelist))]
+
+    c=0
+    for game in top_games:
+        if c > 99:
+            break
+        """
+        scoretxt[1] += "%d: %s%s%d\nSeed/Smooth: %d / %d\n\n" % (
+                    c+1,
+                    game.playername,
+                    "." * (33 - len(game.playername) - int(log10(game.score))),
+                    game.score,
+                    game.seed,
+                    game.smoothing
+                )
+        """
+        scoretxt[1] += str(c+1) + ": " + game.playername \
+                    + "."*(33 - len(game.playername) - int(log10(game.score))) \
+                    + str(game.score) \
+                    + "\nSeed/Smooth: " + str(game.seed) + " / " \
+                    + str(game.smoothing) + "\n\n"
+        #"""
+        c+=1
+    
+    hof.updateBoards(*scoretxt)
+        
+>>>>>>> Stashed changes
 
 def onclick_play(event, menu):
     playername = str(menu.jtf_name.getText())
@@ -49,7 +108,11 @@ def play_game(playername, seed=None): # CHANGE
     game.play()
 
 
+<<<<<<< Updated upstream
 if __name__ == "__main__":
     menu = MainMenu()
     setup_menu(menu)
     bind_onclicks(menu)
+=======
+main()
+>>>>>>> Stashed changes
