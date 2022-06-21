@@ -7,13 +7,8 @@ und Konstanten zugewiesen.
 """
 
 """ Imports: """
-<<<<<<< Updated upstream
-from os.path import abspath # oh nyo the namespace OwO~ onwy impowt whats neccessawy~~ rawr :3
-import ConfigParser as cp
-=======
 from os.path import abspath, exists # oh nyo the namespace OwO~ onwy impowt whats neccessawy~~ rawr :3
 import ConfigParser as cp # o_o realization
->>>>>>> Stashed changes
 from java.awt import Color
 
 # ----- SETTINGS VON INI LADEN -----

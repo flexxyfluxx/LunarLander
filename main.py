@@ -13,8 +13,6 @@ def setup_menu(menu):
     menu.jtf_wndw_height.setText(str(config.WNDW_HEIGHT))
     menu.jtf_wndw_width.setText(str(config.WNDW_WIDTH))
 
-<<<<<<< Updated upstream
-=======
 def update_hof(hof):
     playerlist = get_players().values()
     top_players = sorted(
@@ -71,7 +69,6 @@ def update_hof(hof):
     
     hof.updateBoards(*scoretxt)
         
->>>>>>> Stashed changes
 
 def onclick_play(event, menu):
     playername = str(menu.jtf_name.getText())
@@ -108,11 +105,7 @@ def play_game(playername, seed=None): # CHANGE
     game.play()
 
 
-<<<<<<< Updated upstream
 if __name__ == "__main__":
     menu = MainMenu()
     setup_menu(menu)
     bind_onclicks(menu)
-=======
-main()
->>>>>>> Stashed changes
