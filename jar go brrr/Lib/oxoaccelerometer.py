@@ -1,2 +1,0 @@
-# oxoaccelerometer.py
-# -------- dummy --------------

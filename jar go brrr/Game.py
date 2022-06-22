@@ -226,13 +226,12 @@ class LunarGame(gg.GameGrid):
         self.save(game)
         self.player.add_game(game)
         self.player.save()
-        EndScreen(self, self.score, self.player.name, True if self.score == self.player.high_score else False).show()
+        EndScreen(self, self.score, self.player.name, True if self.score == self.player.high_score.score else False).show()
         self.doPause()
-    
+
     def save(self, game):
-        time = strftime("%Y-%m-%d %H:%M:%S", game.time)
-        with open(config.SAVEDIR+'\\history.txt', 'a+') as f:
-            f.write(
+        time = strftime("%Y-%m-%d %H:%M:%S", self.start_time)
+        with open('history.txt', 'a+') as f:f.write(
                 time+": ["+self.player.name+"] Achieved score of "+str(self.score)+" on seed "+str(self.terrain.seed)+" with smoothing "+str(self.terrain.smoothing)+"."
                     + (" (New high score! :DDD)\n" if self.score > self.player.high_score else "\n")
             )

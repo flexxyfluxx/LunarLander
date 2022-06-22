@@ -39,16 +39,16 @@ class Cfg():
     
     def write_wndw_height(self, new):
         try:
-            new = int(float(new))
+            new = int(new)
         except ValueError:
             print("[ERROR] Given window height not coercible to Int!")
         else:
-            self.WNDW_HEIGHT = new
+            self.WNDW_WIDTH = new
             self._parser.set('Setup', 'WndwHeight', new)
         
     def write_wndw_width(self, new):
         try:
-            new = int(float(new))
+            new = int(new)
         except ValueError:
             print("[ERROR] Given window width not coercible to Int!")
         else:

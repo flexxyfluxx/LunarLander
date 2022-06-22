@@ -7,7 +7,7 @@ from constants_etc import *
 class EndScreen():
     def __init__(self, grid, score, player_name, is_high_score):
         self.grid = grid
-        self._center_align = self.grid.getNbHorzCells()//2
+        self._center_align = self.grid.getNbHorzCells()/2
         self._is_high_score = is_high_score
 
         self.gameover_field = gg.GGTextField(self.grid, gg.Location(self._center_align, 80), True)
@@ -42,11 +42,11 @@ class EndScreen():
         self.score_field.show()
         if self._is_high_score: self.highscore_field.show()
 
-        self.gameover_field.setLocation(gg.Location(self._center_align - self.gameover_field.getTextWidth()//2, 80))
-        self.pname_field.setLocation(gg.Location(self._center_align - self.pname_field.getTextWidth()//2, 128))
-        self.with_score_of_field.setLocation(gg.Location(self._center_align - self.with_score_of_field.getTextWidth()//2, 192))
-        self.score_field.setLocation(gg.Location(self._center_align - self.score_field.getTextWidth()//2, 240))
-        self.highscore_field.setLocation(gg.Location(self._center_align - self.highscore_field.getTextWidth()//2, 280))
+        self.gameover_field.setLocation(gg.Location(self._center_align - self.gameover_field.getTextWidth()/2, 80))
+        self.pname_field.setLocation(gg.Location(self._center_align - self.pname_field.getTextWidth()/2, 128))
+        self.with_score_of_field.setLocation(gg.Location(self._center_align - self.with_score_of_field.getTextWidth()/2, 192))
+        self.score_field.setLocation(gg.Location(self._center_align - self.score_field.getTextWidth()/2, 240))
+        self.highscore_field.setLocation(gg.Location(self._center_align - self.highscore_field.getTextWidth()/2, 280))
 
     
     def hide(self):

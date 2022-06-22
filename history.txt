@@ -7,3 +7,5 @@
 2022-06-22 00:27:06: [std::player] Achieved score of 280 on seed 812874608 with smoothing 13.
 2022-06-22 00:31:54: [std::player] Achieved score of 15 on seed 1223689612 with smoothing 13.
 2022-06-22 00:32:28: [java.util.Player] Achieved score of 15 on seed -1833476988 with smoothing 13. (New high score! :DDD)
+2022-06-22 11:43:50: [flyxx] Achieved score of 15 on seed -958411945 with smoothing 13. (New high score! :DDD)
+2022-06-22 15:54:07: [flyxx] Achieved score of 15 on seed -556286133 with smoothing 13.

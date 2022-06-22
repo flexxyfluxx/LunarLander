@@ -3,31 +3,33 @@
 import pickle as p
 from constants_etc import *
 
-class Player():
 
+class Player():
+    try: # CHANGE
+        players = dict(p.load(open('players.pkl', 'rb+'))) # CHANGE
+    except:
+        players = dict()
     def __init__(self, name, games=[]):
         self.name = str(name)
         self.games = []
         for game in games:
             try:
-                self.add_score(game)
+                self.add_game(game)
             except:
                 pass
-        self.high_score = sorted(self.games, key=lambda y: y.score)[-1] if len(self.games) > 0 \
+        self.high_score = max(self.games, key=lambda game: game.score) if len(self.games) > 0 \
                         else None
     
     def add_game(self, game):
         self.games += [game]
-        if self.high_score is None:
-            self.high_score = game
-        if game.score > self.high_score.score: self.high_score = game
+        if self.high_score is None: self.high_score = game
+        elif game.score > self.high_score.score: self.high_score = game
     
     def save(self):
         players = get_players()
         players.update({self.name: self})
         with open(config.SAVEDIR+'\\players.pkl', 'wb') as f:
             p.dump(players, f)
-
     @classmethod
     def load(self, name):
         players = get_players()
@@ -45,4 +47,4 @@ def get_players():
     return players
 
 if __name__ == "__main__":
-    print(Player.players())
+    print(Player.players)
