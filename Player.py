@@ -2,6 +2,7 @@
 
 import pickle as p
 from constants_etc import *
+from os.path import abspath
 
 
 class Player():
@@ -28,7 +29,7 @@ class Player():
     def save(self):
         players = get_players()
         players.update({self.name: self})
-        with open(config.SAVEDIR+'\\players.pkl', 'wb') as f:
+        with open(abspath('./players.pkl'), 'wb') as f:
             p.dump(players, f)
     @classmethod
     def load(self, name):
@@ -39,7 +40,7 @@ class Player():
 
 def get_players():
     players = dict()
-    with open(config.SAVEDIR+'\\players.pkl', 'rb') as f:
+    with open(abspath('players.pkl'), 'rb') as f:
         try:
             players.update(dict(p.load(f)))
         except:

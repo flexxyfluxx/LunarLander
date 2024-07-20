@@ -2,3 +2,8 @@
 .~lock.Doc.odt#
 jar go brr
 tests
+*.class
+__pycache__
+.jython_cache
+*\~
+*.\~*
